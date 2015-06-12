@@ -51,6 +51,7 @@ import java.util.List;
 public class CPUFragment extends ViewPagerFragment implements Constants {
 
     private static CPUFragment cpuFragment;
+    private static CPUPart cpuPart;
     private static GovernorPart governorPart;
 
     @Override
@@ -58,10 +59,9 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
         super.init(savedInstanceState);
         cpuFragment = this;
 
-        governorPart = new GovernorPart();
         allowSwipe(false);
-        addFragment(new CPUPart());
-        addFragment(governorPart);
+        addFragment(cpuPart == null ? cpuPart = new CPUPart() : cpuPart);
+        addFragment(governorPart == null ? governorPart = new GovernorPart() : governorPart);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
         @Override
         public void init(Bundle savedInstanceState) {
             super.init(savedInstanceState);
-            onScrollDisappearView = cpuFragment.applyOnBootLayout;
+            if (cpuFragment != null) onScrollDisappearView = cpuFragment.applyOnBootLayout;
 
             usageInit();
             if (CPU.getFreqs() != null) coreInit();
@@ -494,7 +494,7 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
         @Override
         public void init(Bundle savedInstanceState) {
             super.init(savedInstanceState);
-            onScrollDisappearView = cpuFragment.applyOnBootLayout;
+            if (cpuFragment != null) onScrollDisappearView = cpuFragment.applyOnBootLayout;
         }
 
         @Override

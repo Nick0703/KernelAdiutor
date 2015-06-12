@@ -245,7 +245,7 @@ public class ProfileFragment extends RecyclerViewFragment {
             addView(mProfileCard);
         }
 
-        getActivity().runOnUiThread(new Runnable() {
+        if (isAdded()) getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 title.setText(getCount() < 1 ? getString(R.string.no_profiles) : getString(R.string.items_found, getCount()));

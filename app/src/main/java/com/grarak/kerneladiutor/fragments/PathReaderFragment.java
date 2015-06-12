@@ -47,6 +47,11 @@ public abstract class PathReaderFragment extends RecyclerViewFragment {
         GOVERNOR, IO
     }
 
+    @Override
+    public boolean showApplyOnBoot() {
+        return false;
+    }
+
     private TextView title;
     private SwipeRefreshLayout refreshLayout;
 

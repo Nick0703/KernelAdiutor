@@ -39,6 +39,7 @@ import java.util.List;
 public class IOFragment extends ViewPagerFragment implements Constants {
 
     private static IOFragment ioFragment;
+    private static IOPart ioPart;
     private static SchedulerPart schedulerPart;
     private static IO.StorageType storageType;
 
@@ -47,10 +48,9 @@ public class IOFragment extends ViewPagerFragment implements Constants {
         super.init(savedInstanceState);
         ioFragment = this;
 
-        schedulerPart = new SchedulerPart();
         allowSwipe(false);
-        addFragment(new IOPart());
-        addFragment(schedulerPart);
+        addFragment(ioPart == null ? ioPart = new IOPart() : ioPart);
+        addFragment(schedulerPart == null ? schedulerPart = new SchedulerPart() : schedulerPart);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class IOFragment extends ViewPagerFragment implements Constants {
         @Override
         public void init(Bundle savedInstanceState) {
             super.init(savedInstanceState);
-            onScrollDisappearView = ioFragment.applyOnBootLayout;
+            if (ioFragment != null) onScrollDisappearView = ioFragment.applyOnBootLayout;
 
             readheads.clear();
             internalStorageInit();
@@ -185,7 +185,7 @@ public class IOFragment extends ViewPagerFragment implements Constants {
         @Override
         public void init(Bundle savedInstanceState) {
             super.init(savedInstanceState);
-            onScrollDisappearView = ioFragment.applyOnBootLayout;
+            if (ioFragment != null) onScrollDisappearView = ioFragment.applyOnBootLayout;
         }
 
         @Override
