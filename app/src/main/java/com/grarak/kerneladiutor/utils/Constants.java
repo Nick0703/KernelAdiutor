@@ -493,9 +493,10 @@ public interface Constants {
     String[] WAKE_MISC_ARRAY = {SCREEN_WAKE_OPTIONS};
 
     // Sleep Misc
+    String S2S = "/sys/android_touch/sweep2sleep";
     String SCREEN_SLEEP_OPTIONS = "/sys/devices/f9924000.i2c/i2c-2/2-0020/input/input2/screen_sleep_options";
 
-    String[] SLEEP_MISC_ARRAY = {SCREEN_SLEEP_OPTIONS};
+    String[] SLEEP_MISC_ARRAY = {S2S, SCREEN_SLEEP_OPTIONS};
 
     // Gesture
     String GESTURE_CRTL = "/sys/devices/virtual/touchscreen/touchscreen_dev/gesture_ctrl";
@@ -619,7 +620,10 @@ public interface Constants {
     String MSM_HSIC_WAKELOCK_DIVIDER = "/sys/module/xhci_hcd/parameters/wl_divide";
 
     // Logging
+    String LOGGER_MODE = "/sys/kernel/logger_mode/logger_mode";
     String LOGGER_ENABLED = "/sys/module/logger/parameters/enabled";
+
+    String[] LOGGER_ARRAY = {LOGGER_MODE, LOGGER_ENABLED};
 
     // Fsync
     String FSYNC = "/sys/devices/virtual/misc/fsynccontrol/fsync_enabled";
