@@ -9,7 +9,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 96
-        versionName "0.9.4.3.1.1 beta"
+        versionName "0.9.4.3.1.1 pac"
     }
     buildTypes {
         release {
