@@ -3,33 +3,31 @@
 // (C) Brandon Valosek, 2011 <bvalosek@gmail.com>
 //
 //-----------------------------------------------------------------------------
-// Modified by Willi Ye to work as Fragment
+// Modified by Willi Ye to work as Fragment and with with big.LITTLE
 
 package com.grarak.kerneladiutor.fragments.information;
-
-// imports
 
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bvalosek.cpuspy.CpuSpyApp;
 import com.bvalosek.cpuspy.CpuStateMonitor;
 import com.grarak.kerneladiutor.R;
-import com.grarak.kerneladiutor.elements.CardViewItem;
+import com.grarak.kerneladiutor.elements.cards.CardViewItem;
+import com.grarak.kerneladiutor.elements.cards.DividerCardView;
 import com.grarak.kerneladiutor.fragments.RecyclerViewFragment;
 import com.grarak.kerneladiutor.utils.Constants;
 import com.grarak.kerneladiutor.utils.Utils;
+import com.grarak.kerneladiutor.utils.kernel.CPU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,19 +37,25 @@ import java.util.List;
  */
 public class FrequencyTableFragment extends RecyclerViewFragment implements Constants {
 
-    private CpuSpyApp cpuSpyApp;
+    private SwipeRefreshLayout refreshLayout;
+
+    private CpuStateMonitor monitor;
 
     private CardViewItem.DCardView uptimeCard;
-    private CardViewItem.DCardView frequencyCard;
     private CardViewItem.DCardView additionalCard;
-    private LinearLayout _uiStatesView;
+    private CardViewItem.DCardView frequencyCard;
+    private LinearLayout uiStatesView;
+
+    private CpuStateMonitor monitorLITTLE;
+
+    private CardViewItem.DCardView uptimeCardLITTLE;
+    private CardViewItem.DCardView additionalCardLITTLE;
+    private CardViewItem.DCardView frequencyCardLITTLE;
+    private LinearLayout uiStatesViewLITTLE;
 
     @Override
     public int getSpan() {
-        int orientation = Utils.getScreenOrientation(getActivity());
-        if (Utils.isTablet(getActivity()))
-            return orientation == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
-        return 1;
+        return Utils.getScreenOrientation(getActivity()) == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
     }
 
     @Override
@@ -59,10 +63,31 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
         return false;
     }
 
-    /**
-     * whether or not we're updating the data in the background
-     */
-    private boolean _updatingData;
+    @Override
+    public RecyclerView getRecyclerView() {
+        View view = getParentView(R.layout.swiperefresh_fragment);
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.color_primary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new RefreshStateDataTask().execute();
+            }
+        });
+
+        return (RecyclerView) view.findViewById(R.id.recycler_view);
+    }
+
+    @Override
+    public void preInit(Bundle savedInstanceState) {
+        super.preInit(savedInstanceState);
+
+        fabView.setVisibility(View.GONE);
+        fabView = null;
+
+        backgroundView.setVisibility(View.GONE);
+        backgroundView = null;
+    }
 
     /**
      * Initialize the Fragment
@@ -71,99 +96,80 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
     public void init(Bundle savedInstanceState) {
         super.init(savedInstanceState);
 
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.frequency_table_fragment, container, false);
-        _uiStatesView = (LinearLayout) view.findViewById(R.id.ui_states_view);
+        monitor = new CpuStateMonitor(CPU.getBigCore());
+
+        if (CPU.isBigLITTLE()) {
+            DividerCardView.DDividerCard bigDivider = new DividerCardView.DDividerCard();
+            bigDivider.setText(getString(R.string.big));
+            bigDivider.toLowerCase();
+            addView(bigDivider);
+        }
 
         uptimeCard = new CardViewItem.DCardView();
         uptimeCard.setTitle(getString(R.string.uptime));
-
-        frequencyCard = new CardViewItem.DCardView();
-        frequencyCard.setTitle(getString(R.string.frequency_table));
-        frequencyCard.setView(view);
+        addView(uptimeCard);
 
         additionalCard = new CardViewItem.DCardView();
         additionalCard.setTitle(getString(R.string.unused_cpu_states));
+        addView(additionalCard);
 
-        // see if we're updating data during a config change (rotate
-        // screen)
-        if (savedInstanceState != null)
-            _updatingData = savedInstanceState.getBoolean("updatingData");
-
-        cpuSpyApp = new CpuSpyApp();
-        if (isAdded()) refreshData();
-
-        addView(uptimeCard);
+        uiStatesView = new LinearLayout(getActivity());
+        uiStatesView.setOrientation(LinearLayout.VERTICAL);
+        frequencyCard = new CardViewItem.DCardView();
+        frequencyCard.setTitle(getString(R.string.frequency_table));
+        frequencyCard.setView(uiStatesView);
+        frequencyCard.setFullSpan(true);
         addView(frequencyCard);
-    }
 
-    /**
-     * When the activity is about to change orientation
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("updatingData", _updatingData);
-    }
+        if (CPU.isBigLITTLE()) {
+            monitorLITTLE = new CpuStateMonitor(CPU.getLITTLEcore());
 
-    /**
-     * called when we want to inflate the menu
-     */
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.frequency_table_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+            DividerCardView.DDividerCard LITTLEDivider = new DividerCardView.DDividerCard();
+            LITTLEDivider.setText(getString(R.string.little));
+            addView(LITTLEDivider);
 
-    /**
-     * called to handle a menu event
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // what it do maybe
-        switch (item.getItemId()) {
-        /* pressed the load menu button */
-            case R.id.menu_refresh:
-                refreshData();
-                break;
-            case R.id.menu_reset:
-                try {
-                    cpuSpyApp.getCpuStateMonitor().setOffsets();
-                } catch (CpuStateMonitor.CpuStateMonitorException e) {
-                    e.printStackTrace();
-                }
+            uptimeCardLITTLE = new CardViewItem.DCardView();
+            uptimeCardLITTLE.setTitle(getString(R.string.uptime));
+            addView(uptimeCardLITTLE);
 
-                cpuSpyApp.saveOffsets(getActivity());
-                updateView();
-                break;
-            case R.id.menu_restore:
-                cpuSpyApp.getCpuStateMonitor().removeOffsets();
-                cpuSpyApp.saveOffsets(getActivity());
-                updateView();
-                break;
+            additionalCardLITTLE = new CardViewItem.DCardView();
+            additionalCardLITTLE.setTitle(getString(R.string.unused_cpu_states));
+            addView(additionalCardLITTLE);
+
+            uiStatesViewLITTLE = new LinearLayout(getActivity());
+            uiStatesViewLITTLE.setOrientation(LinearLayout.VERTICAL);
+            frequencyCardLITTLE = new CardViewItem.DCardView();
+            frequencyCardLITTLE.setTitle(getString(R.string.frequency_table));
+            frequencyCardLITTLE.setView(uiStatesViewLITTLE);
+            frequencyCardLITTLE.setFullSpan(true);
+            addView(frequencyCardLITTLE);
         }
+    }
 
-        // made it
-        return true;
+    @Override
+    public void postInit(Bundle savedInstanceState) {
+        super.postInit(savedInstanceState);
+        new RefreshStateDataTask().execute();
     }
 
     /**
      * Generate and update all UI elements
      */
-    private void updateView() {
+    private void updateView(LinearLayout uiStatesView, CpuStateMonitor monitor, CardViewItem.DCardView frequencyCard,
+                            CardViewItem.DCardView uptimeCard, CardViewItem.DCardView additionalCard) {
         if (!isAdded()) return;
         /**
          * Get the CpuStateMonitor from the app, and iterate over all states,
          * creating a row if the duration is > 0 or otherwise marking it in
          * extraStates (missing)
          */
-        CpuStateMonitor monitor = cpuSpyApp.getCpuStateMonitor();
-        _uiStatesView.removeAllViews();
+        uiStatesView.removeAllViews();
         List<String> extraStates = new ArrayList<>();
         for (CpuStateMonitor.CpuState state : monitor.getStates()) {
             if (state.duration > 0) {
                 addView(frequencyCard);
                 try {
-                    generateStateRow(state, _uiStatesView);
+                    generateStateRow(state, uiStatesView, monitor);
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -179,29 +185,20 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
         }
 
         // update the total state time
-        long totTime = monitor.getTotalStateTime() / 100;
-        uptimeCard.setDescription(sToString(totTime));
+        uptimeCard.setDescription(sToString(monitor.getTotalStateTime() / 100));
 
         // for all the 0 duration states, add the the Unused State area
         if (extraStates.size() > 0) {
             int n = 0;
-            String str = "";
+            StringBuilder stringBuilder = new StringBuilder();
 
             for (String s : extraStates) {
-                if (n++ > 0) str += ", ";
-                str += s;
+                if (n++ > 0) stringBuilder.append(",").append(" ");
+                stringBuilder.append(s);
             }
 
-            addView(additionalCard);
-            additionalCard.setDescription(str);
-        } else removeView(additionalCard);
-    }
-
-    /**
-     * Attempt to update the time-in-state info
-     */
-    private void refreshData() {
-        if (!_updatingData) new RefreshStateDataTask().execute((Void) null);
+            additionalCard.setDescription(stringBuilder.toString());
+        } else additionalCard.setDescription("-");
     }
 
     /**
@@ -225,13 +222,12 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
      * View that corresponds to a CPU freq state row as specified by
      * the state parameter
      */
-    private void generateStateRow(CpuStateMonitor.CpuState state, ViewGroup parent) {
+    private void generateStateRow(CpuStateMonitor.CpuState state, ViewGroup parent, CpuStateMonitor monitor) {
         // inflate the XML into a view in the parent
         LinearLayout layout = (LinearLayout) LayoutInflater.from(getActivity())
                 .inflate(R.layout.state_row, parent, false);
 
         // what percentage we've got
-        CpuStateMonitor monitor = cpuSpyApp.getCpuStateMonitor();
         float per = (float) state.duration * 100 / monitor.getTotalStateTime();
         String sPer = (int) per + "%";
 
@@ -263,28 +259,24 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
      */
     private class RefreshStateDataTask extends AsyncTask<Void, Void, Void> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            refreshLayout.setRefreshing(true);
+        }
+
         /**
          * Stuff to do on a separate thread
          */
         @Override
         protected Void doInBackground(Void... v) {
-            CpuStateMonitor monitor = cpuSpyApp.getCpuStateMonitor();
             try {
                 monitor.updateStates();
+                if (CPU.isBigLITTLE()) monitorLITTLE.updateStates();
             } catch (CpuStateMonitor.CpuStateMonitorException e) {
                 Log.e(TAG, "FrequencyTable: Problem getting CPU states");
             }
-
             return null;
-        }
-
-        /**
-         * Executed on the UI thread right before starting the task
-         */
-        @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "FrequencyTable: Starting data update");
-            _updatingData = true;
         }
 
         /**
@@ -292,9 +284,10 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
          */
         @Override
         protected void onPostExecute(Void v) {
-            Log.i(TAG, "FrequencyTable: Finished data update");
-            _updatingData = false;
-            updateView();
+            updateView(uiStatesView, monitor, frequencyCard, uptimeCard, additionalCard);
+            if (CPU.isBigLITTLE())
+                updateView(uiStatesViewLITTLE, monitorLITTLE, frequencyCardLITTLE, uptimeCardLITTLE, additionalCardLITTLE);
+            refreshLayout.setRefreshing(false);
         }
     }
 

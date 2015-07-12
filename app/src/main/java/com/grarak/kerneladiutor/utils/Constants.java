@@ -47,11 +47,14 @@ public interface Constants {
     String CPU_MIN_FREQ = "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq";
     String CPU_MAX_SCREEN_OFF_FREQ = "/sys/devices/system/cpu/cpu%d/cpufreq/screen_off_max_freq";
     String CPU_MSM_CPUFREQ_LIMIT = "/sys/kernel/msm_cpufreq_limit/cpufreq_limit";
-    String CPU_AVAILABLE_FREQS = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies";
-    String CPU_TIME_STATE = "/sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state";
+    String CPU_AVAILABLE_FREQS = "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_available_frequencies";
+    String CPU_TIME_STATE = "/sys/devices/system/cpu/cpu%d/cpufreq/stats/time_in_state";
     String CPU_SCALING_GOVERNOR = "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_governor";
     String CPU_AVAILABLE_GOVERNORS = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors";
+
     String CPU_GOVERNOR_TUNABLES = "/sys/devices/system/cpu/cpufreq";
+    String CPU_GOVERNOR_TUNABLES_CORE = "/sys/devices/system/cpu/cpu%d/cpufreq";
+
     String CPU_MC_POWER_SAVING = "/sys/devices/system/cpu/sched_mc_power_savings";
     String CPU_WQ_POWER_SAVING = "/sys/module/workqueue/parameters/power_efficient";
     String CPU_AVAILABLE_CFS_SCHEDULERS = "/sys/devices/system/cpu/sched_balance_policy/available_sched_balance_policy";
@@ -73,8 +76,8 @@ public interface Constants {
 
     String[] CPU_ARRAY = {CPU_CUR_FREQ, CPU_TEMP_ZONE0, CPU_TEMP_ZONE1, CPU_CORE_ONLINE, CPU_MAX_FREQ, CPU_MIN_FREQ,
             CPU_MAX_SCREEN_OFF_FREQ, CPU_MSM_CPUFREQ_LIMIT, CPU_AVAILABLE_FREQS, CPU_TIME_STATE, CPU_SCALING_GOVERNOR,
-            CPU_AVAILABLE_GOVERNORS, CPU_GOVERNOR_TUNABLES, CPU_MC_POWER_SAVING, CPU_WQ_POWER_SAVING, CPU_AVAILABLE_CFS_SCHEDULERS,
-            CPU_CURRENT_CFS_SCHEDULER, CPU_QUIET, CPU_BOOST};
+            CPU_AVAILABLE_GOVERNORS, CPU_GOVERNOR_TUNABLES, CPU_GOVERNOR_TUNABLES_CORE, CPU_MC_POWER_SAVING,
+            CPU_WQ_POWER_SAVING, CPU_AVAILABLE_CFS_SCHEDULERS, CPU_CURRENT_CFS_SCHEDULER, CPU_QUIET, CPU_BOOST};
 
     // CPU Voltage
     String CPU_VOLTAGE = "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table";
@@ -472,8 +475,10 @@ public interface Constants {
     String TOUCH_PANEL_DT2W = "/proc/touchpanel/double_tap_enable";
     String DT2W_WAKEUP_GESTURE = "/sys/devices/virtual/input/input1/wakeup_gesture";
     String DT2W_ENABLE = "/sys/devices/platform/s3c2440-i2c.3/i2c-3/3-004a/dt2w_enable";
+    String DT2W_WAKE_GESTURE = "/sys/devices/platform/spi-tegra114.2/spi_master/spi2/spi2.0/input/input0/wake_gesture";
 
-    String[] DT2W_ARRAY = {LGE_TOUCH_DT2W, LGE_TOUCH_CORE_DT2W, LGE_TOUCH_GESTURE, DT2W, TOUCH_PANEL_DT2W, DT2W_WAKEUP_GESTURE, DT2W_ENABLE};
+    String[] DT2W_ARRAY = {LGE_TOUCH_DT2W, LGE_TOUCH_CORE_DT2W, LGE_TOUCH_GESTURE, DT2W, TOUCH_PANEL_DT2W,
+            DT2W_WAKEUP_GESTURE, DT2W_ENABLE, DT2W_WAKE_GESTURE};
 
     // S2W
     String S2W_ONLY = "/sys/android_touch/s2w_s2sonly";
@@ -524,8 +529,8 @@ public interface Constants {
 
     String[] SPEAKER_GAIN_ARRAY = {SPEAKER_GAIN, SPEAKER_BOOST};
 
-    String[][] SOUND_ARRAY = {SPEAKER_GAIN_ARRAY, {SOUND_CONTROL_ENABLE, HEADPHONE_GAIN, HANDSET_MICROPONE_GAIN, CAM_MICROPHONE_GAIN,
-            HEADPHONE_POWERAMP_GAIN, MIC_BOOST, VOLUME_BOOST}};
+    String[][] SOUND_ARRAY = {SPEAKER_GAIN_ARRAY, {SOUND_CONTROL_ENABLE, HEADPHONE_GAIN, HANDSET_MICROPONE_GAIN,
+            CAM_MICROPHONE_GAIN, HEADPHONE_POWERAMP_GAIN, MIC_BOOST, VOLUME_BOOST}};
 
     // Battery
     String FORCE_FAST_CHARGE = "/sys/kernel/fast_charge/force_fast_charge";
@@ -545,8 +550,8 @@ public interface Constants {
     String IO_INTERNAL_READ_AHEAD = "/sys/block/mmcblk0/queue/read_ahead_kb";
     String IO_EXTERNAL_READ_AHEAD = "/sys/block/mmcblk1/queue/read_ahead_kb";
 
-    String[] IO_ARRAY = {IO_INTERNAL_SCHEDULER, IO_EXTERNAL_SCHEDULER, IO_INTERNAL_SCHEDULER_TUNABLE, IO_EXTERNAL_SCHEDULER_TUNABLE,
-            IO_INTERNAL_READ_AHEAD, IO_EXTERNAL_READ_AHEAD};
+    String[] IO_ARRAY = {IO_INTERNAL_SCHEDULER, IO_EXTERNAL_SCHEDULER, IO_INTERNAL_SCHEDULER_TUNABLE,
+            IO_EXTERNAL_SCHEDULER_TUNABLE, IO_INTERNAL_READ_AHEAD, IO_EXTERNAL_READ_AHEAD};
 
     // Kernel Samepage Merging
     String KSM_FOLDER = "/sys/kernel/mm/ksm";
@@ -573,7 +578,7 @@ public interface Constants {
 
     String[] SUPPORTED_VM = {"dirty_ratio", "dirty_background_ratio", "dirty_expire_centisecs",
             "dirty_writeback_centisecs", "min_free_kbytes", "overcommit_ratio", "swappiness",
-            "vfs_cache_pressure", "laptop_mode"};
+            "vfs_cache_pressure", "laptop_mode", "extra_free_kbytes"};
 
     String ZRAM = "/sys/block/zram0";
     String ZRAM_BLOCK = "/dev/block/zram0";
@@ -581,6 +586,15 @@ public interface Constants {
     String ZRAM_RESET = "/sys/block/zram0/reset";
 
     String[] VM_ARRAY = {VM_PATH, ZRAM_BLOCK, ZRAM_DISKSIZE, ZRAM_RESET};
+
+    // Entropy
+    String PROC_RANDOM = "/proc/sys/kernel/random";
+    String PROC_RANDOM_ENTROPY_AVAILABLE = PROC_RANDOM + "/entropy_avail";
+    String PROC_RANDOM_ENTROPY_POOLSIZE = PROC_RANDOM + "/poolsize";
+    String PROC_RANDOM_ENTROPY_READ = PROC_RANDOM + "/read_wakeup_threshold";
+    String PROC_RANDOM_ENTROPY_WRITE = PROC_RANDOM + "/write_wakeup_threshold";
+
+    String[] ENTROPY_ARRAY = {PROC_RANDOM};
 
     // Misc
 

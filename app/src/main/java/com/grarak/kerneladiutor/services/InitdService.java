@@ -48,6 +48,7 @@ public class InitdService extends Service {
             @Override
             protected String doInBackground(Void... params) {
                 RootUtils.SU su = new RootUtils.SU();
+                su.runCommand("for i in `ls /system/etc/init.d`;do chmod 755 $i;done");
                 String output = su.runCommand("[ -d /system/etc/init.d ] && run-parts /system/etc/init.d");
                 su.close();
                 return output;

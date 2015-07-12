@@ -1,0 +1,69 @@
+[
+  {
+    "vendor": [
+      "HTC",
+      "htc"
+    ],
+    "device": [
+      "a5",
+      "a5chl",
+      "a5ul",
+      "a5dwg",
+      "a5dug",
+      "htc_a5",
+      "htc_a5chl",
+      "htc_a5ul",
+      "htc_a5dwg",
+      "htc_a5dug"
+    ],
+    "link": "https://raw.githubusercontent.com/Grarak/KernelAdiutor/master/download/desire816.json"
+  },
+  {
+    "vendor": [
+      "samsung"
+    ],
+    "device": [
+      "GT-I9103"
+    ],
+    "link": "https://raw.githubusercontent.com/Grarak/KernelAdiutor/master/download/galaxyr.json"
+  },
+  {
+    "vendor": [
+      "LGE"
+    ],
+    "device": [
+      "hammerhead"
+    ],
+    "link": "https://raw.githubusercontent.com/Grarak/KernelAdiutor/master/download/nexus5.json"
+  },
+  {
+    "vendor": [
+      "OnePlus"
+    ],
+    "device": [
+      "A0001",
+      "bacon"
+    ],
+    "link": "https://raw.githubusercontent.com/Grarak/KernelAdiutor/master/download/oneplusone.json"
+  },
+  {
+    "vendor": [
+      "Micromax",
+      "Spice",
+      "Karbonn",
+      "Symphony",
+      "Mito",
+      "Evercross",
+      "Nexian",
+      "Cherry",
+      "MyPhone",
+      "QMobile"
+    ],
+    "device": [
+      "sprout4",
+      "sprout8",
+      "sprout"
+    ],
+    "link": "https://raw.githubusercontent.com/Grarak/KernelAdiutor/master/download/sprout.json"
+  }
+]

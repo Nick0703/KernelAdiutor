@@ -31,7 +31,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +52,7 @@ import com.grarak.kerneladiutor.fragments.kernel.BatteryFragment;
 import com.grarak.kerneladiutor.fragments.kernel.CPUFragment;
 import com.grarak.kerneladiutor.fragments.kernel.CPUHotplugFragment;
 import com.grarak.kerneladiutor.fragments.kernel.CPUVoltageFragment;
+import com.grarak.kerneladiutor.fragments.kernel.EntropyFragment;
 import com.grarak.kerneladiutor.fragments.kernel.GPUFragment;
 import com.grarak.kerneladiutor.fragments.kernel.IOFragment;
 import com.grarak.kerneladiutor.fragments.kernel.KSMFragment;
@@ -71,10 +71,13 @@ import com.grarak.kerneladiutor.fragments.tools.BuildpropFragment;
 import com.grarak.kerneladiutor.fragments.tools.InitdFragment;
 import com.grarak.kerneladiutor.fragments.tools.ProfileFragment;
 import com.grarak.kerneladiutor.fragments.tools.RecoveryFragment;
+import com.grarak.kerneladiutor.fragments.tools.download.DownloadsFragment;
 import com.grarak.kerneladiutor.utils.Constants;
+import com.grarak.kerneladiutor.utils.Downloads;
 import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.kernel.CPUHotplug;
 import com.grarak.kerneladiutor.utils.kernel.CPUVoltage;
+import com.grarak.kerneladiutor.utils.kernel.Entropy;
 import com.grarak.kerneladiutor.utils.kernel.GPU;
 import com.grarak.kerneladiutor.utils.kernel.KSM;
 import com.grarak.kerneladiutor.utils.kernel.LMK;
@@ -84,11 +87,12 @@ import com.grarak.kerneladiutor.utils.kernel.Thermal;
 import com.grarak.kerneladiutor.utils.kernel.Wake;
 import com.grarak.kerneladiutor.utils.root.RootUtils;
 import com.grarak.kerneladiutor.utils.tools.Backup;
+import com.grarak.kerneladiutor.utils.tools.Buildprop;
 
 /**
  * Created by willi on 01.12.14.
  */
-public class MainActivity extends AppCompatActivity implements Constants {
+public class MainActivity extends BaseActivity implements Constants {
 
     /**
      * Cache the context of this activity
@@ -116,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements Constants {
 
     private DAdapter.Adapter mAdapter;
 
+    private boolean pressAgain = true;
+
     /**
      * Current Fragment position
      */
@@ -128,24 +134,31 @@ public class MainActivity extends AppCompatActivity implements Constants {
         if (context != null) ((Activity) context).finish();
         context = this;
 
-        // Set english as default language if option is enabled
-        if (Utils.getBoolean("forceenglish", false, this)) Utils.setLocale("en_US", this);
-
-        // Check if darktheme is in use and cache it as boolean
-        Utils.DARKTHEME = Utils.getBoolean("darktheme", false, this);
-        if (Utils.DARKTHEME) super.setTheme(R.style.AppThemeDark);
-
-        setContentView(R.layout.activity_main);
         setView();
-
-        if (Utils.DARKTHEME) toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Dark);
-        setSupportActionBar(toolbar);
-
         String password;
         if (!(password = Utils.getString("password", "", this)).isEmpty())
             askPassword(password);
         else // Use an AsyncTask to initialize everything
             new Task().execute();
+    }
+
+    @Override
+    public int getParentViewId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    public View getParentView() {
+        return null;
+    }
+
+    @Override
+    public Toolbar getToolbar() {
+        return toolbar == null ? toolbar = (Toolbar) findViewById(R.id.toolbar) : toolbar;
+    }
+
+    @Override
+    public void setStatusBarColor() {
     }
 
     /**
@@ -234,11 +247,18 @@ public class MainActivity extends AppCompatActivity implements Constants {
         if (LMK.getMinFrees() != null)
             ITEMS.add(new DAdapter.Item(getString(R.string.low_memory_killer), new LMKFragment()));
         ITEMS.add(new DAdapter.Item(getString(R.string.virtual_memory), new VMFragment()));
+        if (Entropy.hasEntropy())
+            ITEMS.add(new DAdapter.Item(getString(R.string.entropy), new EntropyFragment()));
         ITEMS.add(new DAdapter.Item(getString(R.string.misc_controls), new MiscFragment()));
         ITEMS.add(new DAdapter.Header(getString(R.string.tools)));
+        Downloads downloads;
+        if ((downloads = new Downloads(this)).isSupported())
+            ITEMS.add(new DAdapter.Item(getString(R.string.downloads),
+                    DownloadsFragment.newInstance(downloads.getLink())));
         if (Backup.hasBackup())
             ITEMS.add(new DAdapter.Item(getString(R.string.backup), new BackupFragment()));
-        ITEMS.add(new DAdapter.Item(getString(R.string.build_prop_editor), new BuildpropFragment()));
+        if (Buildprop.hasBuildprop())
+            ITEMS.add(new DAdapter.Item(getString(R.string.build_prop_editor), new BuildpropFragment()));
         ITEMS.add(new DAdapter.Item(getString(R.string.profile), new ProfileFragment()));
         ITEMS.add(new DAdapter.Item(getString(R.string.recovery), new RecoveryFragment()));
         ITEMS.add(new DAdapter.Item(getString(R.string.initd), new InitdFragment()));
@@ -252,7 +272,6 @@ public class MainActivity extends AppCompatActivity implements Constants {
      * Define all views
      */
     private void setView() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         mScrimInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.scrimInsetsFrameLayout);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.statusbar_color));
@@ -260,8 +279,7 @@ public class MainActivity extends AppCompatActivity implements Constants {
         mDrawerList = (RecyclerView) findViewById(R.id.drawer_list);
         mSplashView = (SplashView) findViewById(R.id.splash_view);
 
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mLayoutManager.setSmoothScrollbarEnabled(true);
         mDrawerList.setLayoutManager(mLayoutManager);
         mDrawerList.setHasFixedSize(true);
@@ -303,8 +321,6 @@ public class MainActivity extends AppCompatActivity implements Constants {
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, 0, 0);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        if (Utils.DARKTHEME)
-            mDrawerLayout.setBackgroundColor(getResources().getColor(R.color.black));
 
         mDrawerLayout.post(new Runnable() {
             @Override
@@ -409,8 +425,23 @@ public class MainActivity extends AppCompatActivity implements Constants {
     public void onBackPressed() {
         try {
             if (!ITEMS.get(cur_position).getFragment().onBackPressed())
-                if (!mDrawerLayout.isDrawerOpen(mScrimInsetsFrameLayout)) super.onBackPressed();
-                else mDrawerLayout.closeDrawer(mScrimInsetsFrameLayout);
+                if (!mDrawerLayout.isDrawerOpen(mScrimInsetsFrameLayout)) {
+                    if (pressAgain) {
+                        Utils.toast(getString(R.string.press_back_again), this);
+                        pressAgain = false;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                    pressAgain = true;
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else super.onBackPressed();
+                } else mDrawerLayout.closeDrawer(mScrimInsetsFrameLayout);
         } catch (Exception e) {
             e.printStackTrace();
         }
