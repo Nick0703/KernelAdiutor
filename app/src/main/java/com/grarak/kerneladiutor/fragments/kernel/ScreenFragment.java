@@ -25,9 +25,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.grarak.kerneladiutor.R;
-import com.grarak.kerneladiutor.elements.cards.CardViewItem;
 import com.grarak.kerneladiutor.elements.ColorPalette;
 import com.grarak.kerneladiutor.elements.DAdapter;
+import com.grarak.kerneladiutor.elements.cards.CardViewItem;
 import com.grarak.kerneladiutor.elements.cards.DividerCardView;
 import com.grarak.kerneladiutor.elements.cards.EditTextCardView;
 import com.grarak.kerneladiutor.elements.cards.PopupCardView;
@@ -110,6 +110,8 @@ public class ScreenFragment extends RecyclerViewFragment implements SeekBarCardV
     private SwitchCardView.DSwitchCard mRegisterHookCard;
     private SwitchCardView.DSwitchCard mMasterSequenceCard;
 
+    private SwitchCardView.DSwitchCard mGloveModeCard;
+
     @Override
     public RecyclerView getRecyclerView() {
         mColorPalette = (ColorPalette) getParentView(R.layout.screen_fragment).findViewById(R.id.colorpalette);
@@ -132,6 +134,7 @@ public class ScreenFragment extends RecyclerViewFragment implements SeekBarCardV
         backlightDimmerInit();
         if (Screen.hasNegativeToggle()) negativeToggleInit();
         mdnieGlobalInit();
+        if (Screen.hasGloveMode()) gloveModeInit();
     }
 
     @Override
@@ -695,6 +698,16 @@ public class ScreenFragment extends RecyclerViewFragment implements SeekBarCardV
         }
     }
 
+    private void gloveModeInit() {
+        mGloveModeCard = new SwitchCardView.DSwitchCard();
+        mGloveModeCard.setTitle(getString(R.string.glove_mode));
+        mGloveModeCard.setDescription(getString(R.string.glove_mode_summary));
+        mGloveModeCard.setChecked(Screen.isGloveModeActive());
+        mGloveModeCard.setOnDSwitchCardListener(this);
+
+        addView(mGloveModeCard);
+    }
+
     @Override
     public void onChanged(SeekBarCardView.DSeekBarCard dSeekBarCard, int position) {
         if (dSeekBarCard == mColorCalibrationMinCard) {
@@ -779,6 +792,8 @@ public class ScreenFragment extends RecyclerViewFragment implements SeekBarCardV
             Screen.activateRegisterHook(checked, getActivity());
         else if (dSwitchCard == mMasterSequenceCard)
             Screen.activateMasterSequence(checked, getActivity());
+        else if (dSwitchCard == mGloveModeCard)
+            Screen.activateGloveMode(checked, getActivity());
     }
 
     @Override

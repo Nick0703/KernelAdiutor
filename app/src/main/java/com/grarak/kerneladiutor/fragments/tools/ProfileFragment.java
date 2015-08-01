@@ -38,6 +38,7 @@ import com.grarak.kerneladiutor.elements.DAdapter;
 import com.grarak.kerneladiutor.elements.cards.CardViewItem;
 import com.grarak.kerneladiutor.fragments.RecyclerViewFragment;
 import com.grarak.kerneladiutor.services.ProfileWidget;
+import com.grarak.kerneladiutor.tasker.AddProfileActivity;
 import com.grarak.kerneladiutor.utils.Constants;
 import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.database.CommandDB;
@@ -54,7 +55,16 @@ import java.util.List;
  */
 public class ProfileFragment extends RecyclerViewFragment {
 
+    public static ProfileFragment newInstance() {
+        Bundle args = new Bundle();
+        ProfileFragment fragment = new ProfileFragment();
+        fragment.taskerMode = true;
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     private TextView title;
+    private boolean taskerMode;
 
     @Override
     public boolean showApplyOnBoot() {
@@ -79,6 +89,12 @@ public class ProfileFragment extends RecyclerViewFragment {
     @Override
     public void preInit(Bundle savedInstanceState) {
         super.preInit(savedInstanceState);
+
+        if (taskerMode) {
+            fabView.setVisibility(View.GONE);
+            fabView = null;
+            return;
+        }
 
         fabView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +131,7 @@ public class ProfileFragment extends RecyclerViewFragment {
                 String start = getString(R.string.kernel);
                 String stop = getString(R.string.tools);
                 final LinkedHashMap<Class, AppCompatCheckBox> items = new LinkedHashMap<>();
-                for (DAdapter.DView item : Constants.ITEMS) {
+                for (DAdapter.DView item : Constants.VISIBLE_ITEMS) {
                     if (item.getTitle() != null) {
                         if (item.getTitle().equals(start)) load = false;
                         if (item.getTitle().equals(stop)) load = true;
@@ -129,6 +145,10 @@ public class ProfileFragment extends RecyclerViewFragment {
                     }
                 }
 
+                if (items.size() < 1) {
+                    Utils.toast(getString(R.string.removed_all_sections), getActivity());
+                    return;
+                }
                 selectAllButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -208,6 +228,15 @@ public class ProfileFragment extends RecyclerViewFragment {
             mProfileCard.setOnDCardListener(new CardViewItem.DCardView.OnDCardListener() {
                 @Override
                 public void onClick(CardViewItem.DCardView dCardView) {
+                    if (taskerMode) {
+                        try {
+                            ((AddProfileActivity) getActivity()).finish(profileItems.get(position).getName(),
+                                    profileItems.get(position).getCommands());
+                            return;
+                        } catch (ClassCastException ignored) {
+                        }
+                    }
+
                     new AlertDialog.Builder(getActivity()).setItems(getResources().getStringArray(R.array.profile_menu),
                             new DialogInterface.OnClickListener() {
                                 @Override
@@ -236,10 +265,11 @@ public class ProfileFragment extends RecyclerViewFragment {
                                             });
                                             break;
                                         case 2:
-                                            String text = "";
+                                            StringBuilder s = new StringBuilder();
                                             for (String command : profileItem.getCommands())
-                                                text += text.isEmpty() ? command : "\n" + command;
-                                            new AlertDialog.Builder(getActivity()).setMessage(text.trim()).show();
+                                                s.append(command).append("\n");
+                                            s.setLength(s.length() - 1);
+                                            new AlertDialog.Builder(getActivity()).setMessage(s.toString()).show();
                                             break;
                                     }
                                 }

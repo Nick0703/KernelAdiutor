@@ -77,8 +77,9 @@ public class DownloadCardView extends BaseCardView {
         if (changelog.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String change : changelog)
-                stringBuilder.append("\u2022").append(" ").append(change).append("<br>");
-            stringBuilder.setLength(stringBuilder.length() - 1);
+                if (stringBuilder.length() == 0)
+                    stringBuilder.append("\u2022").append(" ").append(change);
+                else stringBuilder.append("<br>").append("\u2022").append(" ").append(change);
             changelogText.setText(Html.fromHtml(stringBuilder.toString()));
             changelogText.setMovementMethod(LinkMovementMethod.getInstance());
         }
@@ -89,6 +90,15 @@ public class DownloadCardView extends BaseCardView {
                 showDownload(name, download.getMD5sum(), download.getUrl(), download.getInstallMethod());
             }
         });
+
+        if (Utils.isTV(getContext())) {
+            downloadButton.setFocusable(true);
+            downloadButton.setFocusableInTouchMode(true);
+        }
+    }
+
+    @Override
+    public void setFocus() {
     }
 
     private void showDownload(final String name, final String md5, String link, final String installMethod) {

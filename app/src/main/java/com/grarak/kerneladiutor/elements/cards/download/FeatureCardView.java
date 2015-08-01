@@ -47,8 +47,9 @@ public class FeatureCardView extends BaseCardView {
         if (feature.hasItems()) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String subFeature : feature.getItems())
-                stringBuilder.append("\u2022").append(" ").append(subFeature).append("<br>");
-            stringBuilder.setLength(stringBuilder.length() - 1);
+                if (stringBuilder.length() == 0)
+                    stringBuilder.append("\u2022").append(" ").append(subFeature);
+                else stringBuilder.append("<br>").append("\u2022").append(" ").append(subFeature);
 
             subFeatureText.setText(Html.fromHtml(stringBuilder.toString()));
             subFeatureText.setMovementMethod(LinkMovementMethod.getInstance());

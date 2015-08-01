@@ -21,14 +21,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -59,18 +57,13 @@ public class FileBrowserActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fileBrowserActivity = this;
-
-        ActionBar actionBar;
-        if ((actionBar = getSupportActionBar()) != null) actionBar.setDisplayHomeAsUpEnabled(true);
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame,
-                fileBrowserFragment = FileBrowserFragment.newInstance(getIntent().getExtras().getString(FILE_TYPE_ARG)))
-                .commitAllowingStateLoss();
+        setFragment(R.id.content_frame, fileBrowserFragment
+                = FileBrowserFragment.newInstance(getIntent().getExtras().getString(FILE_TYPE_ARG)));
     }
 
     @Override
     public int getParentViewId() {
-        return R.layout.activity_filebrowser;
+        return R.layout.activity_fragment;
     }
 
     @Override
@@ -116,16 +109,6 @@ public class FileBrowserActivity extends BaseActivity {
             else finish = fileBrowserActivity.internalStorage.onBackPressed();
             return finish;
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -275,6 +258,11 @@ public class FileBrowserActivity extends BaseActivity {
                 text.setText(file.getName());
                 text.setCompoundDrawablesWithIntrinsicBounds(file.isDirectory() ? R.drawable.ic_folder : R.drawable.ic_file,
                         0, 0, 0);
+
+                if (Utils.isTV(viewHolder.itemView.getContext())) {
+                    viewHolder.itemView.setFocusable(true);
+                    viewHolder.itemView.setFocusableInTouchMode(true);
+                }
             }
 
             public File getFile() {

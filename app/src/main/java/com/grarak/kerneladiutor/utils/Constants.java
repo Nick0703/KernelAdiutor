@@ -29,9 +29,11 @@ public interface Constants {
 
     String TAG = "Kernel Adiutor";
     String VERSION_NAME = BuildConfig.VERSION_NAME;
+    int VERSION_CODE = BuildConfig.VERSION_CODE;
     String PREF_NAME = "prefs";
     String GAMMA_URL = "https://raw.githubusercontent.com/Grarak/KernelAdiutor/master/gamma_profiles.json";
     List<DAdapter.DView> ITEMS = new ArrayList<>();
+    List<DAdapter.DView> VISIBLE_ITEMS = new ArrayList<>();
 
     // Kernel Informations
     String PROC_VERSION = "/proc/version";
@@ -44,6 +46,8 @@ public interface Constants {
     String CPU_TEMP_ZONE1 = "/sys/class/thermal/thermal_zone1/temp";
     String CPU_CORE_ONLINE = "/sys/devices/system/cpu/cpu%d/online";
     String CPU_MAX_FREQ = "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq";
+    String CPU_MAX_FREQ_KT = "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_max_freq_kt";
+    String CPU_ENABLE_OC = "/sys/devices/system/cpu/cpu%d/cpufreq/enable_oc";
     String CPU_MIN_FREQ = "/sys/devices/system/cpu/cpu%d/cpufreq/scaling_min_freq";
     String CPU_MAX_SCREEN_OFF_FREQ = "/sys/devices/system/cpu/cpu%d/cpufreq/screen_off_max_freq";
     String CPU_MSM_CPUFREQ_LIMIT = "/sys/kernel/msm_cpufreq_limit/cpufreq_limit";
@@ -59,6 +63,7 @@ public interface Constants {
     String CPU_WQ_POWER_SAVING = "/sys/module/workqueue/parameters/power_efficient";
     String CPU_AVAILABLE_CFS_SCHEDULERS = "/sys/devices/system/cpu/sched_balance_policy/available_sched_balance_policy";
     String CPU_CURRENT_CFS_SCHEDULER = "/sys/devices/system/cpu/sched_balance_policy/current_sched_balance_policy";
+    String CPU_ZANEZAM_PROFILE = "/sys/devices/system/cpu/cpufreq/zzmoove/profile_number";
 
     String CPU_QUIET = "/sys/devices/system/cpu/cpuquiet";
     String CPU_QUIET_ENABLE = CPU_QUIET + "/cpuquiet_driver/enabled";
@@ -74,10 +79,10 @@ public interface Constants {
     String CPU_BOOST_INPUT_MS = CPU_BOOST + "/input_boost_ms";
     String CPU_BOOST_INPUT_BOOST_FREQ = CPU_BOOST + "/input_boost_freq";
 
-    String[] CPU_ARRAY = {CPU_CUR_FREQ, CPU_TEMP_ZONE0, CPU_TEMP_ZONE1, CPU_CORE_ONLINE, CPU_MAX_FREQ, CPU_MIN_FREQ,
-            CPU_MAX_SCREEN_OFF_FREQ, CPU_MSM_CPUFREQ_LIMIT, CPU_AVAILABLE_FREQS, CPU_TIME_STATE, CPU_SCALING_GOVERNOR,
-            CPU_AVAILABLE_GOVERNORS, CPU_GOVERNOR_TUNABLES, CPU_GOVERNOR_TUNABLES_CORE, CPU_MC_POWER_SAVING,
-            CPU_WQ_POWER_SAVING, CPU_AVAILABLE_CFS_SCHEDULERS, CPU_CURRENT_CFS_SCHEDULER, CPU_QUIET, CPU_BOOST};
+    String[] CPU_ARRAY = {CPU_CUR_FREQ, CPU_TEMP_ZONE0, CPU_TEMP_ZONE1, CPU_CORE_ONLINE, CPU_MAX_FREQ, CPU_MAX_FREQ_KT, CPU_ENABLE_OC,
+            CPU_MIN_FREQ, CPU_MAX_SCREEN_OFF_FREQ, CPU_MSM_CPUFREQ_LIMIT, CPU_AVAILABLE_FREQS, CPU_TIME_STATE, CPU_SCALING_GOVERNOR,
+            CPU_AVAILABLE_GOVERNORS, CPU_GOVERNOR_TUNABLES, CPU_GOVERNOR_TUNABLES_CORE, CPU_MC_POWER_SAVING, CPU_WQ_POWER_SAVING,
+            CPU_AVAILABLE_CFS_SCHEDULERS, CPU_CURRENT_CFS_SCHEDULER, CPU_ZANEZAM_PROFILE, CPU_QUIET, CPU_BOOST};
 
     // CPU Voltage
     String CPU_VOLTAGE = "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table";
@@ -458,12 +463,13 @@ public interface Constants {
     String NEGATIVE_TOGGLE = "/sys/module/cypress_touchkey/parameters/mdnie_shortcut_enabled";
     String REGISTER_HOOK = "/sys/class/misc/mdnie/hook_intercept";
     String MASTER_SEQUENCE = "/sys/class/misc/mdnie/sequence_intercept";
+    String GLOVE_MODE = "/sys/devices/virtual/touchscreen/touchscreen_dev/mode";
 
     String[][] SCREEN_ARRAY = {SCREEN_RGB_ARRAY, SCREEN_RGB_CTRL_ARRAY, SCREEN_KCAL_CTRL_NEW_ARRAY, K_GAMMA_ARRAY,
             GAMMACONTROL_ARRAY, DSI_PANEL_ARRAY, MIN_BRIGHTNESS_ARRAY,
             {SCREEN_KCAL_CTRL_MIN, SCREEN_HBM, LM3530_BRIGTHNESS_MODE, LM3530_MIN_BRIGHTNESS, LM3530_MAX_BRIGHTNESS,
                     LM3630_BACKLIGHT_DIMMER, LM3630_BACKLIGHT_DIMMER_THRESHOLD, LM3630_BACKLIGHT_DIMMER_OFFSET,
-                    NEGATIVE_TOGGLE, REGISTER_HOOK, MASTER_SEQUENCE}};
+                    NEGATIVE_TOGGLE, REGISTER_HOOK, MASTER_SEQUENCE, GLOVE_MODE}};
 
     // Wake
 

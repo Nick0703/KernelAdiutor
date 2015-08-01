@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
-    <string name="app_name" translatable="false">Kernel Adiutor</string>
+    <string name="app_name">Kernel Adiutor</string>
     <string name="no_root">No root available</string>
     <string name="no_busybox">No busybox available</string>
     <string name="ok">OK</string>
@@ -84,6 +84,8 @@
     <string name="unused_cpu_states">Unused CPU states</string>
     <string name="uptime">Uptime</string>
     <string name="deep_sleep">Deep Sleep</string>
+    <string name="reset_timer">Reset Timers</string>
+    <string name="restore_timer">Restore Timers</string>
 
     <!-- Kernel Information -->
     <string name="kernel_version">Kernel Version</string>
@@ -118,6 +120,8 @@
     <string name="cpu_quiet">CPUQuiet</string>
     <string name="cpu_quiet_summary">CPUQuiet implements pluggable policies for forcing cpu cores into quiescent state. Appropriate policies will save power without hurting performance.</string>
     <string name="cpu_quiet_governor">CPUQuiet Governor</string>
+    <string name="zanezam_profile">ZaneZam Governor Profile</string>
+    <string name="none">None</string>
     <string name="cpu_boost">CPU Boost</string>
     <string name="debug_mask">Debug Mask</string>
     <string name="debug_mask_summary">Allows you to activate debug mask for CPU Boost operations.</string>
@@ -377,6 +381,8 @@
     <string name="register_hook_summary">Register intercept acts like a hook and will enable catching scenario settings and modifying them through delta controls. If a scenario does not have a setting (register) in its base sequence, then it cannot be modified by the hook.</string>
     <string name="master_sequence">Master Sequence</string>
     <string name="master_sequence_summary">Enabling the master sequence will disable and ignore Samsungs profiles and scenarios, the ROM controls will be disabled.</string>
+    <string name="glove_mode">Glove Mode</string>
+    <string name="glove_mode_summary">Enabling this will let you use your phone even while wearing gloves.</string>
 
     <!-- Wake Controls -->
     <string name="dt2w">DoubleTap2Wake</string>
@@ -564,12 +570,15 @@
     <string name="name">Name</string>
     <string name="select_all">Select all</string>
     <string name="apply">Apply</string>
+    <string name="removed_all_sections">You removed all sections! No profiles for you.</string>
     <string name="no_settings">No settings found!</string>
     <string name="press_again_to_apply">Press again to apply.</string>
     <string name="applied">Applied</string>
+    <string name="applying_profile">Applying %s</string>
 
     <!-- Recovery -->
     <string name="reboot">Reboot</string>
+    <string name="reboot_soft">Soft Reboot</string>
     <string name="reboot_recovery">Reboot Recovery</string>
     <string name="reboot_bootloader">Reboot Bootloader</string>
     <string name="reboot_download">Reboot Download</string>
@@ -615,7 +624,7 @@
     <string name="driver_message_summary">Copy driver message (dmesg) to /sdcard/dmesg.txt</string>
     <string name="security">Security</string>
     <string name="set_password">Set Password</string>
-    <string name="set_password_summary">You can protect Kernel Adiutor by setting up a password. Every time you open this application, you have to enter it. If you forget it, simply wipe the data of this application in settings of your phone. Don\'t worry I won\'t share your password. </string>
+    <string name="set_password_summary">You can protect Kernel Adiutor by setting up a password. Every time you open this application, you have to enter it. If you forget it, simply wipe the data of this application in settings of your device. Don\'t worry I won\'t share your password.</string>
     <string name="delete_password">Delete Password</string>
     <string name="new_password">New password</string>
     <string name="confirm_new_password">Confirm new password</string>
@@ -625,6 +634,7 @@
     <string name="password_not_match">Password doesn\'t match confirmation</string>
     <string name="password_too_long">Password is too long</string>
     <string name="set_password_first">Set a password first</string>
+    <string name="show_sections">Show sections</string>
 
     <!-- FAQ -->
     <string name="misspelled">Why did you misspell \"Auditor\"?</string>
@@ -641,20 +651,20 @@
     <!-- About us -->
     <string name="license">License</string>
     <string name="app_license">Kernel Adiutor is licensed under the Apache License, Version 2.0, and uses following libraries</string>
-    <string name="appcompat_v7">v7 Appcompat Library</string>
-    <string name="cardview_v7">v7 Cardview Library</string>
-    <string name="recyclerview_v7">v7 Recyclerview Library</string>
-    <string name="google">Google</string>
-    <string name="fab">FloatingActionButton</string>
-    <string name="jerzy">Jerzy Chałupski</string>
-    <string name="dashclock">Dashclock</string>
-    <string name="nurik">Roman Nurik</string>
-    <string name="nineoldandroids">NineOldAndroids</string>
-    <string name="wharton">Jake Wharton</string>
-    <string name="picasso">Picasso</string>
-    <string name="square">Square Inc.</string>
-    <string name="materialtabs">MaterialTabs</string>
-    <string name="frenn">Karim Frenn</string>
+    <string name="appcompat_v7" translatable="false">v7 Appcompat Library</string>
+    <string name="cardview_v7" translatable="false">v7 Cardview Library</string>
+    <string name="recyclerview_v7" translatable="false">v7 Recyclerview Library</string>
+    <string name="google" translatable="false">Google</string>
+    <string name="fab" translatable="false">FloatingActionButton</string>
+    <string name="jerzy" translatable="false">Jerzy Chałupski</string>
+    <string name="dashclock" translatable="false">Dashclock</string>
+    <string name="nurik" translatable="false">Roman Nurik</string>
+    <string name="nineoldandroids" translatable="false">NineOldAndroids</string>
+    <string name="wharton" translatable="false">Jake Wharton</string>
+    <string name="picasso" translatable="false">Picasso</string>
+    <string name="square" translatable="false">Square Inc.</string>
+    <string name="materialtabs" translatable="false">MaterialTabs</string>
+    <string name="frenn" translatable="false">Karim Frenn</string>
     <string name="open_source">Open source</string>
     <string name="open_source_summary">This application is open source. Check it out on my Github.</string>
     <string name="feature_request">Feature request</string>
