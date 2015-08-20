@@ -32,14 +32,16 @@ import com.grarak.kerneladiutor.MainActivity;
 import com.grarak.kerneladiutor.R;
 import com.grarak.kerneladiutor.elements.DAdapter;
 import com.grarak.kerneladiutor.elements.cards.CardViewItem;
-import com.grarak.kerneladiutor.elements.cards.DividerCardView;
+import com.grarak.kerneladiutor.elements.DDivider;
 import com.grarak.kerneladiutor.elements.cards.PopupCardView;
 import com.grarak.kerneladiutor.elements.cards.SwitchCardView;
 import com.grarak.kerneladiutor.fragments.RecyclerViewFragment;
 import com.grarak.kerneladiutor.services.BootService;
+import com.grarak.kerneladiutor.services.ProfileTileReceiver;
 import com.grarak.kerneladiutor.utils.Constants;
 import com.grarak.kerneladiutor.utils.Utils;
-import com.grarak.kerneladiutor.utils.root.RootUtils;
+import com.grarak.kerneladiutor.utils.database.ProfileDB;
+import com.kerneladiutor.library.root.RootUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +64,7 @@ public class SettingsFragment extends RecyclerViewFragment {
         if (!Resources.getSystem().getConfiguration().locale.getLanguage().startsWith("en") && !Utils.isTV(getActivity()))
             forceenglishlanguageInit();
         if (Constants.VERSION_NAME.contains("beta")) betainfoInit();
+        if (Utils.hasCMSDK()) profileTileInit();
         applyonbootInit();
         debuggingInit();
         securityInit();
@@ -117,8 +120,24 @@ public class SettingsFragment extends RecyclerViewFragment {
         addView(mBetaInfoCard);
     }
 
+    private void profileTileInit() {
+        SwitchCardView.DSwitchCard mShowProfileTileCard = new SwitchCardView.DSwitchCard();
+        mShowProfileTileCard.setDescription(getString(R.string.show_profile_tile));
+        mShowProfileTileCard.setChecked(Utils.getBoolean("profiletile", true, getActivity()));
+        mShowProfileTileCard.setOnDSwitchCardListener(new SwitchCardView.DSwitchCard.OnDSwitchCardListener() {
+            @Override
+            public void onChecked(SwitchCardView.DSwitchCard dSwitchCard, boolean checked) {
+                Utils.saveBoolean("profiletile", checked, getActivity());
+                ProfileTileReceiver.publishProfileTile(checked ? new ProfileDB(getActivity())
+                        .getAllProfiles() : null, getActivity());
+            }
+        });
+
+        addView(mShowProfileTileCard);
+    }
+
     private void applyonbootInit() {
-        DividerCardView.DDividerCard mApplyonBootDividerCard = new DividerCardView.DDividerCard();
+        DDivider mApplyonBootDividerCard = new DDivider();
         mApplyonBootDividerCard.setText(getString(R.string.apply_on_boot));
 
         addView(mApplyonBootDividerCard);
@@ -204,7 +223,7 @@ public class SettingsFragment extends RecyclerViewFragment {
     }
 
     private void debuggingInit() {
-        DividerCardView.DDividerCard mDebuggingDividerCard = new DividerCardView.DDividerCard();
+        DDivider mDebuggingDividerCard = new DDivider();
         mDebuggingDividerCard.setText(getString(R.string.debugging));
 
         addView(mDebuggingDividerCard);
@@ -274,7 +293,7 @@ public class SettingsFragment extends RecyclerViewFragment {
     }
 
     private void securityInit() {
-        DividerCardView.DDividerCard mSecurityDividerCard = new DividerCardView.DDividerCard();
+        DDivider mSecurityDividerCard = new DDivider();
         mSecurityDividerCard.setText(getString(R.string.security));
 
         addView(mSecurityDividerCard);
@@ -389,7 +408,7 @@ public class SettingsFragment extends RecyclerViewFragment {
     }
 
     private void showSectionsInit() {
-        DividerCardView.DDividerCard mShowSectionsDividerCard = new DividerCardView.DDividerCard();
+        DDivider mShowSectionsDividerCard = new DDivider();
         mShowSectionsDividerCard.setText(getString(R.string.show_sections));
         addView(mShowSectionsDividerCard);
 

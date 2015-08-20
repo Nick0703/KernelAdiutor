@@ -22,6 +22,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
@@ -31,7 +32,7 @@ import com.grarak.kerneladiutor.R;
 import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.database.ProfileDB;
 import com.grarak.kerneladiutor.utils.root.Control;
-import com.grarak.kerneladiutor.utils.root.RootUtils;
+import com.kerneladiutor.library.root.RootUtils;
 
 import java.util.List;
 
@@ -48,18 +49,19 @@ public class ProfileWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
-        for (int appWidgetId : appWidgetIds) {
-            Intent svcIntent = new Intent(context, WidgetService.class);
-            svcIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            svcIntent.setData(Uri.parse(svcIntent.toUri(Intent.URI_INTENT_SCHEME)));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+            for (int appWidgetId : appWidgetIds) {
+                Intent svcIntent = new Intent(context, WidgetService.class);
+                svcIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                svcIntent.setData(Uri.parse(svcIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
-            RemoteViews widget = new RemoteViews(context.getPackageName(), R.layout.profile_widget_layout);
-            widget.setRemoteAdapter(R.id.profile_list, svcIntent);
+                RemoteViews widget = new RemoteViews(context.getPackageName(), R.layout.profile_widget_layout);
+                widget.setRemoteAdapter(R.id.profile_list, svcIntent);
 
-            widget.setPendingIntentTemplate(R.id.profile_list, getPendingIntent(context, LIST_ITEM_CLICK));
+                widget.setPendingIntentTemplate(R.id.profile_list, getPendingIntent(context, LIST_ITEM_CLICK));
 
-            appWidgetManager.updateAppWidget(appWidgetId, widget);
-        }
+                appWidgetManager.updateAppWidget(appWidgetId, widget);
+            }
 
     }
 

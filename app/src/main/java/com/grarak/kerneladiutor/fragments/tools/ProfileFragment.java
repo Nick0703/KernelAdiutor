@@ -37,6 +37,7 @@ import com.grarak.kerneladiutor.R;
 import com.grarak.kerneladiutor.elements.DAdapter;
 import com.grarak.kerneladiutor.elements.cards.CardViewItem;
 import com.grarak.kerneladiutor.fragments.RecyclerViewFragment;
+import com.grarak.kerneladiutor.services.ProfileTileReceiver;
 import com.grarak.kerneladiutor.services.ProfileWidget;
 import com.grarak.kerneladiutor.tasker.AddProfileActivity;
 import com.grarak.kerneladiutor.utils.Constants;
@@ -44,7 +45,7 @@ import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.database.CommandDB;
 import com.grarak.kerneladiutor.utils.database.ProfileDB;
 import com.grarak.kerneladiutor.utils.root.Control;
-import com.grarak.kerneladiutor.utils.root.RootUtils;
+import com.kerneladiutor.library.root.RootUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -129,7 +130,7 @@ public class ProfileFragment extends RecyclerViewFragment {
 
                 boolean load = true;
                 String start = getString(R.string.kernel);
-                String stop = getString(R.string.tools);
+                String stop = getString(R.string.plugins);
                 final LinkedHashMap<Class, AppCompatCheckBox> items = new LinkedHashMap<>();
                 for (DAdapter.DView item : Constants.VISIBLE_ITEMS) {
                     if (item.getTitle() != null) {
@@ -294,6 +295,7 @@ public class ProfileFragment extends RecyclerViewFragment {
             int appWidgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(getActivity(), ProfileWidget.class));
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.profile_list);
         }
+        ProfileTileReceiver.publishProfileTile(profileItems, getActivity());
     }
 
 }

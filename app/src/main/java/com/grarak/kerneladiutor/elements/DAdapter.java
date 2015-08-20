@@ -66,7 +66,7 @@ public class DAdapter {
             void onItemClick(View view, int position);
         }
 
-        public List<DView> DViews;
+        public final List<DView> DViews;
         private OnItemClickListener onItemClickListener;
         private int selectedItem;
         private boolean itemOnly;
@@ -369,6 +369,8 @@ public class DAdapter {
         }
 
         private static Bitmap uriToBitmap(Uri uri, Context context) throws IOException {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                context.getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             InputStream inputStream = context.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             inputStream.close();

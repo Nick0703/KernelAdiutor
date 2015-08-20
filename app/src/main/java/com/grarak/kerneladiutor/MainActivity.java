@@ -59,6 +59,7 @@ import com.grarak.kerneladiutor.fragments.kernel.IOFragment;
 import com.grarak.kerneladiutor.fragments.kernel.KSMFragment;
 import com.grarak.kerneladiutor.fragments.kernel.LMKFragment;
 import com.grarak.kerneladiutor.fragments.kernel.MiscFragment;
+import com.grarak.kerneladiutor.fragments.kernel.PluginsFragment;
 import com.grarak.kerneladiutor.fragments.kernel.ScreenFragment;
 import com.grarak.kerneladiutor.fragments.kernel.SoundFragment;
 import com.grarak.kerneladiutor.fragments.kernel.ThermalFragment;
@@ -73,9 +74,11 @@ import com.grarak.kerneladiutor.fragments.tools.InitdFragment;
 import com.grarak.kerneladiutor.fragments.tools.ProfileFragment;
 import com.grarak.kerneladiutor.fragments.tools.RecoveryFragment;
 import com.grarak.kerneladiutor.fragments.tools.download.DownloadsFragment;
+import com.grarak.kerneladiutor.services.ProfileTileReceiver;
 import com.grarak.kerneladiutor.utils.Constants;
-import com.grarak.kerneladiutor.utils.Downloads;
 import com.grarak.kerneladiutor.utils.Utils;
+import com.grarak.kerneladiutor.utils.database.ProfileDB;
+import com.grarak.kerneladiutor.utils.json.Downloads;
 import com.grarak.kerneladiutor.utils.kernel.CPUHotplug;
 import com.grarak.kerneladiutor.utils.kernel.CPUVoltage;
 import com.grarak.kerneladiutor.utils.kernel.Entropy;
@@ -86,9 +89,9 @@ import com.grarak.kerneladiutor.utils.kernel.Screen;
 import com.grarak.kerneladiutor.utils.kernel.Sound;
 import com.grarak.kerneladiutor.utils.kernel.Thermal;
 import com.grarak.kerneladiutor.utils.kernel.Wake;
-import com.grarak.kerneladiutor.utils.root.RootUtils;
 import com.grarak.kerneladiutor.utils.tools.Backup;
 import com.grarak.kerneladiutor.utils.tools.Buildprop;
+import com.kerneladiutor.library.root.RootUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,6 +213,29 @@ public class MainActivity extends BaseActivity implements Constants {
         if ((actionBar = getSupportActionBar()) != null)
             actionBar.setTitle(VISIBLE_ITEMS.get(position).getTitle());
         mAdapter.setItemChecked(position, true);
+
+        if (Utils.getInt("tabsclicked", 0, this) == 30
+                && !Utils.isAppInstalled("com.grarak.kerneladiutordonate", MainActivity.this))
+            new AlertDialog.Builder(this).setTitle(getString(R.string.thank_you))
+                    .setMessage(getString(R.string.heavy_user_message))
+                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.rate_app), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Utils.openAppInStore(getPackageName(), MainActivity.this);
+                        }
+                    })
+                    .setNeutralButton(getString(R.string.donate), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Utils.openAppInStore("com.grarak.kerneladiutordonate", MainActivity.this);
+                        }
+                    }).show();
+        Utils.saveInt("tabsclicked", Utils.getInt("tabsclicked", 0, this) + 1, this);
     }
 
     /**
@@ -248,6 +274,7 @@ public class MainActivity extends BaseActivity implements Constants {
         if (Entropy.hasEntropy())
             ITEMS.add(new DAdapter.Item(getString(R.string.entropy), new EntropyFragment()));
         ITEMS.add(new DAdapter.Item(getString(R.string.misc_controls), new MiscFragment()));
+        ITEMS.add(new DAdapter.Item(getString(R.string.plugins), new PluginsFragment()));
         ITEMS.add(new DAdapter.Header(getString(R.string.tools)));
         Downloads downloads;
         if ((downloads = new Downloads(this)).isSupported())
@@ -414,8 +441,7 @@ public class MainActivity extends BaseActivity implements Constants {
                                 public void onClick(DialogInterface dialog, int which) {
                                 }
                             }).show();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
             }
 
             // Start with the very first fragment on the list
@@ -425,6 +451,9 @@ public class MainActivity extends BaseActivity implements Constants {
                     break;
                 }
             }
+
+            ProfileTileReceiver.publishProfileTile(new ProfileDB(MainActivity.this).getAllProfiles(),
+                    MainActivity.this);
         }
     }
 

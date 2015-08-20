@@ -29,7 +29,7 @@ import android.widget.ProgressBar;
 import com.grarak.kerneladiutor.R;
 import com.grarak.kerneladiutor.elements.DAdapter;
 import com.grarak.kerneladiutor.elements.cards.CardViewItem;
-import com.grarak.kerneladiutor.elements.cards.DividerCardView;
+import com.grarak.kerneladiutor.elements.DDivider;
 import com.grarak.kerneladiutor.elements.cards.PopupCardView;
 import com.grarak.kerneladiutor.elements.cards.SeekBarCardView;
 import com.grarak.kerneladiutor.elements.cards.SwitchCardView;
@@ -41,11 +41,12 @@ import com.grarak.kerneladiutor.utils.Constants;
 import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.kernel.CPU;
 import com.grarak.kerneladiutor.utils.root.Control;
-import com.grarak.kerneladiutor.utils.root.RootFile;
+import com.kerneladiutor.library.root.RootFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by willi on 07.04.15.
@@ -124,8 +125,6 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
         private SwitchCardView.DSwitchCard mCpuQuietEnableCard;
         private PopupCardView.DPopupCard mCpuQuietGovernorCard;
 
-        private PopupCardView.DPopupCard mZaneZamProfileCard;
-
         private SwitchCardView.DSwitchCard mCpuBoostEnableCard;
         private SwitchCardView.DSwitchCard mCpuBoostDebugMaskCard;
         private SeekBarCardView.DSeekBarCard mCpuBoostMsCard;
@@ -146,19 +145,18 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
             if (CPU.hasTemp()) tempInit();
             if (CPU.getFreqs() != null) {
                 if (CPU.isBigLITTLE()) {
-                    DividerCardView.DDividerCard bigDivider = new DividerCardView.DDividerCard();
-                    bigDivider.setText(getString(R.string.big));
-                    bigDivider.toLowerCase();
+                    DDivider bigDivider = new DDivider();
+                    bigDivider.setText(getString(R.string.big).toLowerCase(Locale.getDefault()));
                     addView(bigDivider);
                 }
                 coreInit();
                 freqInit();
             }
             if (CPU.getAvailableGovernors() != null) governorInit();
-            DividerCardView.DDividerCard othersDivider = null;
+            DDivider othersDivider = null;
             if (CPU.isBigLITTLE()) {
-                DividerCardView.DDividerCard LITTLEDivider = new DividerCardView.DDividerCard();
-                LITTLEDivider.setText(getString(R.string.little));
+                DDivider LITTLEDivider = new DDivider();
+                LITTLEDivider.setText(getString(R.string.little).toUpperCase(Locale.getDefault()));
                 addView(LITTLEDivider);
 
                 if (CPU.getFreqs(CPU.getLITTLEcore()) != null) {
@@ -167,7 +165,7 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
                 }
                 if (CPU.getAvailableGovernors(CPU.getLITTLEcore()) != null) governorLITTLEInit();
 
-                othersDivider = new DividerCardView.DDividerCard();
+                othersDivider = new DDivider();
                 othersDivider.setText(getString(R.string.other));
                 addView(othersDivider);
             }
@@ -176,7 +174,6 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
             if (CPU.hasPowerSavingWq()) powerSavingWqInit();
             if (CPU.hasCFSScheduler()) cfsSchedulerInit();
             if (CPU.hasCpuQuiet()) cpuQuietInit();
-            if (CPU.hasZaneZamProfile()) cpuZaneZamInit();
             if (CPU.hasCpuBoost()) cpuBoostInit();
             if (othersDivider != null && count == getCount()) removeView(othersDivider);
         }
@@ -394,15 +391,6 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
             }
         }
 
-        private void cpuZaneZamInit() {
-            mZaneZamProfileCard = new PopupCardView.DPopupCard(CPU.getZaneZamProfiles(getActivity()));
-            mZaneZamProfileCard.setDescription(getString(R.string.zanezam_profile));
-            mZaneZamProfileCard.setItem(CPU.getCurZaneZamProfile());
-            mZaneZamProfileCard.setOnDPopupCardListener(this);
-
-            addView(mZaneZamProfileCard);
-        }
-
         private void cpuBoostInit() {
             List<DAdapter.DView> views = new ArrayList<>();
             if (CPU.hasCpuBoostEnable()) {
@@ -495,7 +483,7 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
             }
 
             if (views.size() > 0) {
-                DividerCardView.DDividerCard mCpuBoostDividerCard = new DividerCardView.DDividerCard();
+                DDivider mCpuBoostDividerCard = new DDivider();
                 mCpuBoostDividerCard.setText(getString(R.string.cpu_boost));
                 addView(mCpuBoostDividerCard);
 
@@ -554,8 +542,6 @@ public class CPUFragment extends ViewPagerFragment implements Constants {
                 CPU.setCFSScheduler(CPU.getAvailableCFSSchedulers().get(position), getActivity());
             else if (dPopupCard == mCpuQuietGovernorCard)
                 CPU.setCpuQuietGovernor(CPU.getCpuQuietAvailableGovernors().get(position), getActivity());
-            else if (dPopupCard == mZaneZamProfileCard)
-                CPU.setZaneZamProfile(position, getActivity());
             else if (dPopupCard == mCpuBoostSyncThresholdCard)
                 CPU.setCpuBoostSyncThreshold(position == 0 ? 0 : CPU.getFreqs().get(position - 1), getActivity());
             else {

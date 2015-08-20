@@ -43,15 +43,15 @@ public abstract class BaseCardView extends CardView {
     /**
      * Views
      */
-    protected View layoutView;
+    protected final View layoutView;
 
     private HeaderCardView headerCardView;
-    private LinearLayout headerLayout;
+    private final LinearLayout headerLayout;
 
     private TextView innerView;
     private CharSequence mTitle;
 
-    protected LinearLayout customLayout;
+    protected final LinearLayout customLayout;
     private View customView;
 
     public BaseCardView(Context context) {
@@ -116,7 +116,7 @@ public abstract class BaseCardView extends CardView {
     public void setMargin() {
         int padding = getResources().getDimensionPixelSize(R.dimen.basecard_padding);
         LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        layoutParams.setMargins(padding, padding, padding, padding);
+        layoutParams.setMargins(padding, padding, padding, 0);
         setLayoutParams(layoutParams);
     }
 

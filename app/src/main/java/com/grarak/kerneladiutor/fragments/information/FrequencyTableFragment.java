@@ -29,8 +29,8 @@ import android.widget.TextView;
 import com.bvalosek.cpuspy.CpuSpyApp;
 import com.bvalosek.cpuspy.CpuStateMonitor;
 import com.grarak.kerneladiutor.R;
+import com.grarak.kerneladiutor.elements.DDivider;
 import com.grarak.kerneladiutor.elements.cards.CardViewItem;
-import com.grarak.kerneladiutor.elements.cards.DividerCardView;
 import com.grarak.kerneladiutor.fragments.RecyclerViewFragment;
 import com.grarak.kerneladiutor.utils.Constants;
 import com.grarak.kerneladiutor.utils.Utils;
@@ -38,6 +38,7 @@ import com.grarak.kerneladiutor.utils.kernel.CPU;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * main activity class
@@ -94,6 +95,9 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
 
         backgroundView.setVisibility(View.GONE);
         backgroundView = null;
+
+        cpuSpyApp = new CpuSpyApp(CPU.getBigCore());
+        if (CPU.isBigLITTLE()) cpuSpyAppLITTLE = new CpuSpyApp(CPU.getLITTLEcore());
     }
 
     /**
@@ -103,12 +107,9 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
     public void init(Bundle savedInstanceState) {
         super.init(savedInstanceState);
 
-        cpuSpyApp = new CpuSpyApp(CPU.getBigCore());
-
         if (CPU.isBigLITTLE()) {
-            DividerCardView.DDividerCard bigDivider = new DividerCardView.DDividerCard();
-            bigDivider.setText(getString(R.string.big));
-            bigDivider.toLowerCase();
+            DDivider bigDivider = new DDivider();
+            bigDivider.setText(getString(R.string.big).toLowerCase(Locale.getDefault()));
             addView(bigDivider);
         }
 
@@ -129,10 +130,8 @@ public class FrequencyTableFragment extends RecyclerViewFragment implements Cons
         addView(frequencyCard);
 
         if (CPU.isBigLITTLE()) {
-            cpuSpyAppLITTLE = new CpuSpyApp(CPU.getLITTLEcore());
-
-            DividerCardView.DDividerCard LITTLEDivider = new DividerCardView.DDividerCard();
-            LITTLEDivider.setText(getString(R.string.little));
+            DDivider LITTLEDivider = new DDivider();
+            LITTLEDivider.setText(getString(R.string.little).toUpperCase(Locale.getDefault()));
             addView(LITTLEDivider);
 
             uptimeCardLITTLE = new CardViewItem.DCardView();

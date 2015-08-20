@@ -24,7 +24,9 @@ import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.database.CommandDB;
 import com.grarak.kerneladiutor.utils.kernel.CPU;
 import com.grarak.kerneladiutor.utils.kernel.CPUHotplug;
+import com.kerneladiutor.library.root.RootUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,14 +50,12 @@ public class Control implements Constants {
 
         commandDB.putCommand(path, command);
         commandDB.commit();
-
-        Log.i(TAG, "Run command: " + command);
-
     }
 
     private static void run(String command, String path, Context context) {
         RootUtils.runCommand(command);
         commandSaver(context, path, command);
+        Log.i(TAG, "Run command: " + command);
     }
 
     private static int getChecksum(int arg1, int arg2) {
@@ -81,45 +81,43 @@ public class Control implements Constants {
         run("setprop " + key + " " + value, key, context);
     }
 
-    public static void startService(String service, boolean save, Context context) {
+    public static void startService(String service, Context context) {
         RootUtils.runCommand("start " + service);
 
-        if (save) commandSaver(context, service, "start " + service);
+        if (context != null) commandSaver(context, service, "start " + service);
     }
 
-    public static void stopService(String service, boolean save, Context context) {
+    public static void stopService(String service, Context context) {
         RootUtils.runCommand("stop " + service);
-        if (service.equals(HOTPLUG_MPDEC)) bringCoresOnline();
 
-        if (save) commandSaver(context, service, "stop " + service);
+        if (context != null) commandSaver(context, service, "stop " + service);
     }
 
-    public static void bringCoresOnline() {
-        for (int i = 0; i < CPU.getCoreCount(); i++) CPU.activateCore(i, true, null);
-    }
-
-    private static Thread mThread;
+    private static final List<Thread> tasks = new ArrayList<>();
 
     public static void runCommand(final String value, final String file, final CommandType command, final String id,
                                   final Context context) {
-        Thread thread = new Thread(new Runnable() {
+        final Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (command == CommandType.CPU || command == CommandType.CPU_LITTLE) {
                     boolean mpd = false;
                     if (CPUHotplug.hasMpdecision() && CPUHotplug.isMpdecisionActive()) {
                         mpd = true;
-                        stopService(HOTPLUG_MPDEC, false, context);
+                        stopService(HOTPLUG_MPDEC, null);
                     }
 
                     List<Integer> range = command == CommandType.CPU ? CPU.getBigCoreRange() : CPU.getLITTLECoreRange();
                     for (int i = 0; i < range.size(); i++) {
+                        if (i != 0)
+                            Control.run(String.format("echo 1 > " + CPU_CORE_ONLINE, i),
+                                    String.format(CPU_CORE_ONLINE, i) + "cpuonline", context);
                         setPermission(String.format(file, range.get(i)), 644, context);
                         runGeneric(String.format(file, range.get(i)), value, id, context);
                         setPermission(String.format(file, range.get(i)), 444, context);
                     }
 
-                    if (mpd) startService(HOTPLUG_MPDEC, false, context);
+                    if (mpd) startService(HOTPLUG_MPDEC, null);
                 } else if (command == CommandType.GENERIC) {
                     runGeneric(file, value, id, context);
                 } else if (command == CommandType.FAUX_GENERIC) {
@@ -130,13 +128,22 @@ public class Control implements Constants {
             }
         });
 
-        try {
-            if (mThread != null) mThread.join();
-            thread.start();
-            mThread = thread;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        tasks.add(thread);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) if (tasks.get(0) == thread) {
+                    thread.start();
+                    try {
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    tasks.remove(thread);
+                    break;
+                }
+            }
+        }).start();
     }
 
     public static void runCommand(final String value, final String file, final CommandType command, final Context context) {

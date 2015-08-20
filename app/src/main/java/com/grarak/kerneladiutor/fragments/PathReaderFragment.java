@@ -34,7 +34,7 @@ import com.grarak.kerneladiutor.elements.cards.PopupCardView;
 import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.kernel.CPU;
 import com.grarak.kerneladiutor.utils.root.Control;
-import com.grarak.kerneladiutor.utils.root.RootFile;
+import com.kerneladiutor.library.root.RootFile;
 
 import java.util.List;
 
@@ -78,7 +78,7 @@ public abstract class PathReaderFragment extends RecyclerViewFragment {
         fabView = null;
     }
 
-    private Runnable refresh = new Runnable() {
+    private final Runnable refresh = new Runnable() {
         @Override
         public void run() {
             refresh();

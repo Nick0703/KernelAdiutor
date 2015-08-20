@@ -63,7 +63,6 @@ public interface Constants {
     String CPU_WQ_POWER_SAVING = "/sys/module/workqueue/parameters/power_efficient";
     String CPU_AVAILABLE_CFS_SCHEDULERS = "/sys/devices/system/cpu/sched_balance_policy/available_sched_balance_policy";
     String CPU_CURRENT_CFS_SCHEDULER = "/sys/devices/system/cpu/sched_balance_policy/current_sched_balance_policy";
-    String CPU_ZANEZAM_PROFILE = "/sys/devices/system/cpu/cpufreq/zzmoove/profile_number";
 
     String CPU_QUIET = "/sys/devices/system/cpu/cpuquiet";
     String CPU_QUIET_ENABLE = CPU_QUIET + "/cpuquiet_driver/enabled";
@@ -82,7 +81,7 @@ public interface Constants {
     String[] CPU_ARRAY = {CPU_CUR_FREQ, CPU_TEMP_ZONE0, CPU_TEMP_ZONE1, CPU_CORE_ONLINE, CPU_MAX_FREQ, CPU_MAX_FREQ_KT, CPU_ENABLE_OC,
             CPU_MIN_FREQ, CPU_MAX_SCREEN_OFF_FREQ, CPU_MSM_CPUFREQ_LIMIT, CPU_AVAILABLE_FREQS, CPU_TIME_STATE, CPU_SCALING_GOVERNOR,
             CPU_AVAILABLE_GOVERNORS, CPU_GOVERNOR_TUNABLES, CPU_GOVERNOR_TUNABLES_CORE, CPU_MC_POWER_SAVING, CPU_WQ_POWER_SAVING,
-            CPU_AVAILABLE_CFS_SCHEDULERS, CPU_CURRENT_CFS_SCHEDULER, CPU_ZANEZAM_PROFILE, CPU_QUIET, CPU_BOOST};
+            CPU_AVAILABLE_CFS_SCHEDULERS, CPU_CURRENT_CFS_SCHEDULER, CPU_QUIET, CPU_BOOST};
 
     // CPU Voltage
     String CPU_VOLTAGE = "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table";
@@ -357,16 +356,23 @@ public interface Constants {
             GPU_AVAILABLE_1C00000_QCOM_GOVERNORS, GPU_AVAILABLE_OMAP_GOVERNORS};
 
     // Simple GPU
-    String SIMPLE_GPU = "/sys/module/simple_gpu_algorithm";
-    String SIMPLE_GPU_ACTIVATE = SIMPLE_GPU + "/parameters/simple_gpu_activate";
-    String SIMPLE_GPU_LAZINESS = SIMPLE_GPU + "/parameters/simple_laziness";
-    String SIMPLE_RAMP_THRESHOLD = SIMPLE_GPU + "/parameters/simple_ramp_threshold";
+    String SIMPLE_GPU_PARAMETERS = "/sys/module/simple_gpu_algorithm/parameters";
+    String SIMPLE_GPU_ACTIVATE = SIMPLE_GPU_PARAMETERS + "/simple_gpu_activate";
+    String SIMPLE_GPU_LAZINESS = SIMPLE_GPU_PARAMETERS + "/simple_laziness";
+    String SIMPLE_RAMP_THRESHOLD = SIMPLE_GPU_PARAMETERS + "/simple_ramp_threshold";
+
+    // Adreno Idler
+    String ADRENO_IDLER_PARAMETERS = "/sys/module/adreno_idler/parameters/";
+    String ADRENO_IDLER_ACTIVATE = ADRENO_IDLER_PARAMETERS + "adreno_idler_active";
+    String ADRENO_IDLER_DOWNDIFFERENTIAL = ADRENO_IDLER_PARAMETERS + "/adreno_idler_downdifferential";
+    String ADRENO_IDLER_IDLEWAIT = ADRENO_IDLER_PARAMETERS + "/adreno_idler_idlewait";
+    String ADRENO_IDLER_IDLEWORKLOAD = ADRENO_IDLER_PARAMETERS + "/adreno_idler_idleworkload";
 
     String[][] GPU_ARRAY = {GPU_2D_CUR_FREQ_ARRAY,
             GPU_2D_MAX_FREQ_ARRAY, GPU_2D_AVAILABLE_FREQS_ARRAY,
             GPU_2D_SCALING_GOVERNOR_ARRAY, GPU_CUR_FREQ_ARRAY,
             GPU_MAX_FREQ_ARRAY, GPU_AVAILABLE_FREQS_ARRAY,
-            GPU_SCALING_GOVERNOR_ARRAY, {SIMPLE_GPU}};
+            GPU_SCALING_GOVERNOR_ARRAY, {SIMPLE_GPU_PARAMETERS, ADRENO_IDLER_PARAMETERS}};
 
     // Screen
     String SCREEN_KCAL = "/sys/devices/platform/kcal_ctrl.0";
@@ -630,12 +636,29 @@ public interface Constants {
     String VIB_ENABLE = "/sys/devices/i2c-3/3-0033/vibrator/vib0/vib_enable";
 
     // Wakelock
-    String SMB135X_WAKELOCK = "/sys/module/smb135x_charger/parameters/use_wlock";
+    String[] SMB135X_WAKELOCKS = {
+            "/sys/module/smb135x_charger/parameters/use_wlock",
+            "/sys/module/wakeup/parameters/enable_smb135x_wake_ws"
+    };
+
     String SENSOR_IND_WAKELOCK = "/sys/module/wakeup/parameters/enable_si_ws";
     String MSM_HSIC_HOST_WAKELOCK = "/sys/module/wakeup/parameters/enable_msm_hsic_ws";
-    String WLAN_RX_WAKELOCK = "/sys/module/wakeup/parameters/wlan_rx_wake";
-    String WLAN_CTRL_WAKELOCK = "/sys/module/wakeup/parameters/wlan_ctrl_wake";
-    String WLAN_WAKELOCK = "/sys/module/wakeup/parameters/wlan_wake";
+
+    String[] WLAN_RX_WAKELOCKS = {
+            "/sys/module/wakeup/parameters/wlan_rx_wake",
+            "/sys/module/wakeup/parameters/enable_wlan_rx_wake_ws"
+    };
+
+    String[] WLAN_CTRL_WAKELOCKS = {
+            "/sys/module/wakeup/parameters/wlan_ctrl_wake",
+            "/sys/module/wakeup/parameters/enable_wlan_ctrl_wake_ws"
+    };
+
+    String[] WLAN_WAKELOCKS = {
+            "/sys/module/wakeup/parameters/wlan_wake",
+            "/sys/module/wakeup/parameters/enable_wlan_wake_ws"
+    };
+
     String WLAN_RX_WAKELOCK_DIVIDER = "/sys/module/bcmdhd/parameters/wl_divide";
     String MSM_HSIC_WAKELOCK_DIVIDER = "/sys/module/xhci_hcd/parameters/wl_divide";
 
@@ -659,9 +682,10 @@ public interface Constants {
     String TCP_AVAILABLE_CONGESTIONS = "/proc/sys/net/ipv4/tcp_available_congestion_control";
     String HOSTNAME_KEY = "net.hostname";
 
-    String[][] MISC_ARRAY = {{VIB_ENABLE, SMB135X_WAKELOCK, SENSOR_IND_WAKELOCK, MSM_HSIC_HOST_WAKELOCK, WLAN_RX_WAKELOCK,
-            WLAN_CTRL_WAKELOCK, WLAN_WAKELOCK, WLAN_RX_WAKELOCK_DIVIDER, MSM_HSIC_WAKELOCK_DIVIDER, LOGGER_ENABLED, FSYNC,
-            DYNAMIC_FSYNC, POWER_SUSPEND_MODE, POWER_SUSPEND_STATE, TCP_AVAILABLE_CONGESTIONS, HOSTNAME_KEY}, VIBRATION_ARRAY};
+    String[][] MISC_ARRAY = {{VIB_ENABLE, SENSOR_IND_WAKELOCK, MSM_HSIC_HOST_WAKELOCK, WLAN_RX_WAKELOCK_DIVIDER,
+            MSM_HSIC_WAKELOCK_DIVIDER, LOGGER_ENABLED, FSYNC, DYNAMIC_FSYNC, POWER_SUSPEND_MODE, POWER_SUSPEND_STATE,
+            TCP_AVAILABLE_CONGESTIONS, HOSTNAME_KEY},
+            SMB135X_WAKELOCKS, WLAN_RX_WAKELOCKS, WLAN_CTRL_WAKELOCKS, WLAN_WAKELOCKS, VIBRATION_ARRAY};
 
     // Build prop
     String BUILD_PROP = "/system/build.prop";

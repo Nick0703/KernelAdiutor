@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.text.InputType;
 
 import com.grarak.kerneladiutor.R;
-import com.grarak.kerneladiutor.elements.cards.DividerCardView;
+import com.grarak.kerneladiutor.elements.DDivider;
 import com.grarak.kerneladiutor.elements.cards.EditTextCardView;
 import com.grarak.kerneladiutor.elements.cards.SeekBarCardView;
 import com.grarak.kerneladiutor.fragments.RecyclerViewFragment;
@@ -89,7 +89,7 @@ public class VMFragment extends RecyclerViewFragment implements SeekBarCardView.
     }
 
     private void zramInit() {
-        DividerCardView.DDividerCard mZRAMDividerCard = new DividerCardView.DDividerCard();
+        DDivider mZRAMDividerCard = new DDivider();
         mZRAMDividerCard.setText(getString(R.string.zram));
         addView(mZRAMDividerCard);
 

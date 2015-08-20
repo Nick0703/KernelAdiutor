@@ -65,10 +65,10 @@ public class RecyclerViewFragment extends BaseFragment {
     protected View backgroundView;
     protected View fabView;
     private Handler hand;
+    private boolean firstOpening = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         this.inflater = inflater;
         this.container = container;
 
@@ -105,9 +105,7 @@ public class RecyclerViewFragment extends BaseFragment {
                 applyOnBootView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        Utils.saveBoolean(getClassName() + "onboot", isChecked, getActivity());
-                        Utils.toast(getString(isChecked ? R.string.apply_on_boot_enabled : R.string.apply_on_boot_disabled,
-                                getActionBar().getTitle()), getActivity());
+                        applyOnBootChecked(isChecked);
                     }
                 });
             }
@@ -155,12 +153,13 @@ public class RecyclerViewFragment extends BaseFragment {
             protected void onPreExecute() {
                 super.onPreExecute();
 
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hand = new Handler();
-                    }
-                });
+                if (hand == null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            hand = new Handler();
+                        }
+                    });
                 adapter = new DAdapter.Adapter(new ArrayList<DAdapter.DView>());
                 try {
                     if (isAdded()) preInit(savedInstanceState);
@@ -202,6 +201,7 @@ public class RecyclerViewFragment extends BaseFragment {
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
                 }
+                firstOpening = false;
             }
         }.execute();
 
@@ -223,6 +223,12 @@ public class RecyclerViewFragment extends BaseFragment {
     public void setRecyclerView(RecyclerView recyclerView) {
         layoutManager = new StaggeredGridLayoutManager(getSpan(), StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
+    }
+
+    public void applyOnBootChecked(boolean isChecked) {
+        Utils.saveBoolean(getClassName() + "onboot", isChecked, getActivity());
+        Utils.toast(getString(isChecked ? R.string.apply_on_boot_enabled : R.string.apply_on_boot_disabled,
+                getActionBar().getTitle()), getActivity());
     }
 
     public void setProgressBar(ProgressBar progressBar) {
@@ -270,6 +276,10 @@ public class RecyclerViewFragment extends BaseFragment {
         adapter.notifyDataSetChanged();
     }
 
+    public void resetRecyclerview() {
+        recyclerView.setAdapter(adapter);
+    }
+
     public int getCount() {
         return adapter.DViews.size();
     }
@@ -295,14 +305,19 @@ public class RecyclerViewFragment extends BaseFragment {
     }
 
     public void setOnScrollListener(RecyclerView recyclerView) {
-        if (recyclerView != null && applyOnBootLayout != null) {
-            recyclerView.setClipToPadding(false);
-            int padding = getResources().getDimensionPixelSize(R.dimen.recyclerview_padding);
-            recyclerView.setPadding(padding, applyOnBootLayout.getHeight(), padding, recyclerView.getPaddingBottom());
-            resetTranslations();
+        if (recyclerView != null) {
+            int paddingBottom = recyclerView.getPaddingBottom()
+                    + getResources().getDimensionPixelSize(R.dimen.basecard_padding);
+            if (applyOnBootLayout != null) {
+                recyclerView.setPadding(0, applyOnBootLayout.getHeight(), 0, firstOpening ? paddingBottom
+                        : recyclerView.getPaddingBottom());
+                resetTranslations();
 
-            if (!Utils.isTV(getActivity()))
-                recyclerView.addOnScrollListener(onScrollListener = new CustomScrollListener());
+                if (!Utils.isTV(getActivity()))
+                    recyclerView.addOnScrollListener(onScrollListener = new CustomScrollListener());
+            } else recyclerView.setPadding(0, 0, 0, firstOpening ? paddingBottom
+                    : recyclerView.getPaddingBottom());
+            recyclerView.setClipToPadding(false);
         }
     }
 

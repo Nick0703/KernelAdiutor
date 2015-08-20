@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <string name="app_name">Kernel Adiutor</string>
+    <string name="root_waiting">Waiting for root access</string>
     <string name="no_root">No root available</string>
     <string name="no_busybox">No busybox available</string>
     <string name="ok">OK</string>
@@ -14,6 +15,11 @@
     <string name="password">Password</string>
     <string name="password_wrong">Password is wrong</string>
     <string name="press_back_again">Press back again to leave</string>
+    <string name="more">More</string>
+    <string name="thank_you">Thank you!</string>
+    <string name="heavy_user_message">It seems like your are really enjoying this application! Thank you for using it!</string>
+    <string name="rate_app">Rate the app</string>
+    <string name="donate">Donate to me</string>
 
     <!-- FileBrowser -->
     <string name="select_file">Select %s?</string>
@@ -69,6 +75,7 @@
     <string name="virtual_memory">Virtual Memory</string>
     <string name="entropy">Entropy</string>
     <string name="misc_controls">Misc Controls</string>
+    <string name="plugins">Plugins</string>
     <string name="backup">Backup</string>
     <string name="build_prop_editor">Build prop Editor</string>
     <string name="profile">Profile</string>
@@ -120,8 +127,6 @@
     <string name="cpu_quiet">CPUQuiet</string>
     <string name="cpu_quiet_summary">CPUQuiet implements pluggable policies for forcing cpu cores into quiescent state. Appropriate policies will save power without hurting performance.</string>
     <string name="cpu_quiet_governor">CPUQuiet Governor</string>
-    <string name="zanezam_profile">ZaneZam Governor Profile</string>
-    <string name="none">None</string>
     <string name="cpu_boost">CPU Boost</string>
     <string name="debug_mask">Debug Mask</string>
     <string name="debug_mask_summary">Allows you to activate debug mask for CPU Boost operations.</string>
@@ -323,6 +328,14 @@
     <string name="laziness_summary">This increases the threshold to ramp up or down GPU frequencies. The lower it is, the more performance you get.</string>
     <string name="ramp_thresold">Ramp Thresold</string>
     <string name="ramp_thresold_summary">This increases the number of times the GPU governor ramp down requests. The higher it is, the more performance you get.</string>
+    <string name="adreno_idler">Adreno Idler</string>
+    <string name="adreno_idler_summary">An efficient workaround for msm-adreno-tz\'s overheads.</string>
+    <string name="down_differential">Down Differenctial</string>
+    <string name="down_differential_summary">Threshold for determining if the given workload is idle.</string>
+    <string name="idle_wait">Idle Wait</string>
+    <string name="idle_wait_summary">Number of events to wait before ramping down the frequency. The idlewait\'th events before current one must be all idle before Adreno idler ramps down the frequency. This implementation is to prevent micro-lags on scrolling or playing games. Adreno idler will more actively try to ramp down the frequency if this is set to a lower value.</string>
+    <string name="workload">Workload</string>
+    <string name="workload_summary">Adreno idler will more actively try to ramp down the frequency if this is set to a higher value.</string>
 
     <!-- Screen -->
     <string name="red">Red</string>
@@ -521,7 +534,17 @@
     <string name="wlan_rx_wakelock_divider">wlan_rx Wakelock Divider</string>
     <string name="msm_hsic_wakelock_divider">msm_hsic Wakelock Divider</string>
 
+    <!-- Plugins -->
+    <string name="plugin_warning">I, the creator of this application, am not responsible for any damages that third party apps produce! I also can\'t guarantee for the functionality of them. Please be careful which applications you download!</string>
+    <string name="download_plugins">Download Plugins</string>
+    <string name="looking_plugins">Looking for plugins</string>
+    <string name="no_plugins">No plugins found</string>
+    <string name="installed">Installed</string>
+    <string name="update_available">Update available</string>
+    <string name="not_installed">Not installed</string>
+
     <!-- Downloads -->
+    <string name="no_kernels">No kernels found</string>
     <string name="logo">Logo</string>
     <string name="features">Features</string>
     <string name="loading_counting">Loading %1$d/%2$d</string>
@@ -607,6 +630,7 @@
     <string name="force_english_language">Force English Language</string>
     <string name="beta_info">Beta Information</string>
     <string name="beta_info_summary">Show a dialog on start if you are using a beta version.</string>
+    <string name="show_profile_tile">Show Profile Tile</string>
     <string name="notification">Notification</string>
     <string name="notification_summary">Show a notification when apply on boot service starts. Please disable this if you get any problems.</string>
     <string name="show_toast">Show toast</string>

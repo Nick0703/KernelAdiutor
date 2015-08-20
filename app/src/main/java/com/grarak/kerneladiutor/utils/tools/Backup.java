@@ -21,7 +21,8 @@ import android.util.Log;
 
 import com.grarak.kerneladiutor.utils.Constants;
 import com.grarak.kerneladiutor.utils.Utils;
-import com.grarak.kerneladiutor.utils.root.RootUtils;
+import com.kerneladiutor.library.Tools;
+import com.kerneladiutor.library.root.RootUtils;
 
 import java.io.File;
 
@@ -38,7 +39,7 @@ public class Backup {
         BOOT, RECOVERY, FOTA
     }
 
-    private static String[] Boot = {
+    private static final String[] Boot = {
             "/dev/block/platform/omap/omap_hsmmc.0/by-name/boot",
             "/dev/block/platform/sprd-sdhci.3/by-name/KERNEL",
             "/dev/block/platform/sdhci-tegra.3/by-name/LX",
@@ -53,7 +54,7 @@ public class Backup {
             "/dev/boot"
     };
 
-    private static String[] Recovery = {
+    private static final String[] Recovery = {
             "/dev/block/platform/omap/omap_hsmmc.0/by-name/recovery",
             "/dev/block/platform/omap/omap_hsmmc.1/by-name/recovery",
             "/dev/block/platform/sdhci-tegra.3/by-name/recovery",
@@ -79,7 +80,7 @@ public class Backup {
             "/dev/recovery"
     };
 
-    private static String[] Fota = {
+    private static final String[] Fota = {
             "/dev/block/platform/msm_sdcc.1/by-name/FOTAKernel"
     };
 
@@ -87,7 +88,7 @@ public class Backup {
         String parentFile = file.getParent();
         String sdcard = Environment.getExternalStorageDirectory().getPath();
         if (parentFile.startsWith(sdcard))
-            parentFile = parentFile.replace(sdcard, Utils.getInternalStorage());
+            parentFile = parentFile.replace(sdcard, Tools.getInternalStorage());
         String command = "dd if='" + parentFile + "/" + file.getName() + "' of=" + getPartition(partition_type);
         Log.i(Constants.TAG, "Executing: " + command);
         RootUtils.runCommand(command);
@@ -127,7 +128,7 @@ public class Backup {
                 folder = "fota";
                 break;
         }
-        folder = Utils.getInternalStorage() + "/KernelAdiutor/" + folder;
+        folder = Tools.getInternalStorage() + "/KernelAdiutor/" + folder;
         if (Utils.existFile(folder)) return folder;
         return "/sdcard/KernelAdiutor/" + folder;
     }
