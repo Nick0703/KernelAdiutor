@@ -393,7 +393,7 @@
     <string name="register_hook">Register Hook</string>
     <string name="register_hook_summary">Register intercept acts like a hook and will enable catching scenario settings and modifying them through delta controls. If a scenario does not have a setting (register) in its base sequence, then it cannot be modified by the hook.</string>
     <string name="master_sequence">Master Sequence</string>
-    <string name="master_sequence_summary">Enabling the master sequence will disable and ignore Samsungs profiles and scenarios, the ROM controls will be disabled.</string>
+    <string name="master_sequence_summary">Enabling the master sequence will disable and ignore Samsung\'s profiles and scenarios, the ROM controls will be disabled.</string>
     <string name="glove_mode">Glove Mode</string>
     <string name="glove_mode_summary">Enabling this will let you use your phone even while wearing gloves.</string>
 
@@ -670,7 +670,7 @@
     <string name="feature_function">What does feature x do?</string>
     <string name="feature_function_summary">If you don\'t know what this control does, then simply don\'t touch it. Please do a proper research before playing with your expensive hardware.</string>
     <string name="add_new_features">Could you add feature x and y?</string>
-    <string name="add_new_features_summary">That\'s hard to say. I try to add all features, but it\'s hard to make this app universal for all devices. I only have a Samsung Galaxy S4 (I9500) and an HTC Desire 816, so don\'t blame me if features don\'t get merged immediately.</string>
+    <string name="add_new_features_summary">That\'s hard to say. I try to add all features, but it\'s hard to make this app universal for all devices. I only have a Samsung Galaxy S4 (I9500), an HTC Desire 816 and recently got a OnePlus 2, so don\'t blame me if features don\'t get merged immediately.</string>
 
     <!-- About us -->
     <string name="license">License</string>

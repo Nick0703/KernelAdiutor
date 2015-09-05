@@ -284,25 +284,35 @@ public class CPU implements Constants {
     public static List<Integer> getFreqs(int core) {
         if (mFreqs == null) mFreqs = new Integer[getCoreCount()][];
         if (mFreqs[core] == null)
-            if (Utils.existFile(String.format(CPU_AVAILABLE_FREQS, 0))) {
-                if (core > 0) while (!Utils.existFile(String.format(CPU_AVAILABLE_FREQS, core)))
-                    activateCore(core, true, null);
+            if (Utils.existFile(String.format(CPU_TIME_STATE, core))
+                    || Utils.existFile(String.format(CPU_TIME_STATE_2, 0))) {
+                String file;
+                if (Utils.existFile(String.format(CPU_TIME_STATE, core))) {
+                    file = String.format(CPU_TIME_STATE, core);
+                } else {
+                    if (core > 0) {
+                        activateCore(core, true, null);
+                        file = String.format(CPU_TIME_STATE_2, core);
+                    } else file = String.format(CPU_TIME_STATE_2, 0);
+                }
+                String values;
+                if ((values = Utils.readFile(file)) != null) {
+                    String[] valueArray = values.split("\\r?\\n");
+                    mFreqs[core] = new Integer[valueArray.length];
+                    for (int i = 0; i < mFreqs[core].length; i++)
+                        mFreqs[core][i] = Utils.stringToInt(valueArray[i].split(" ")[0]);
+                }
+            } else if (Utils.existFile(String.format(CPU_AVAILABLE_FREQS, 0))) {
+                if (core > 0) {
+                    while (!Utils.existFile(String.format(CPU_AVAILABLE_FREQS, core)))
+                        activateCore(core, true, null);
+                }
                 String values;
                 if ((values = Utils.readFile(String.format(CPU_AVAILABLE_FREQS, core))) != null) {
                     String[] valueArray = values.split(" ");
                     mFreqs[core] = new Integer[valueArray.length];
                     for (int i = 0; i < mFreqs[core].length; i++)
                         mFreqs[core][i] = Utils.stringToInt(valueArray[i]);
-                }
-            } else if (Utils.existFile(String.format(CPU_TIME_STATE, 0))) {
-                if (core > 0) while (!Utils.existFile(String.format(CPU_TIME_STATE, core)))
-                    activateCore(core, true, null);
-                String values;
-                if ((values = Utils.readFile(String.format(CPU_TIME_STATE, core))) != null) {
-                    String[] valueArray = values.split("\\r?\\n");
-                    mFreqs[core] = new Integer[valueArray.length];
-                    for (int i = 0; i < mFreqs[core].length; i++)
-                        mFreqs[core][i] = Utils.stringToInt(valueArray[i].split(" ")[0]);
                 }
             }
         if (mFreqs[core] == null) return null;

@@ -163,9 +163,18 @@ public class CpuStateMonitor {
     public void updateStates() throws CpuStateMonitorException {
         _states.clear();
         try {
-            if (core > 0) while (!Utils.existFile(String.format(Constants.CPU_TIME_STATE, core)))
-                CPU.activateCore(core, true, null);
-            FileReader fileReader = new FileReader(String.format(Constants.CPU_TIME_STATE, core));
+            String file;
+            if (Utils.existFile(String.format(Constants.CPU_TIME_STATE, core))) {
+                file = String.format(Constants.CPU_TIME_STATE, core);
+            } else {
+                if (core > 0) {
+                    CPU.activateCore(core, true, null);
+                    file = String.format(Constants.CPU_TIME_STATE_2, core);
+                } else file = String.format(Constants.CPU_TIME_STATE_2, 0);
+            }
+            if (file == null)
+                throw new CpuStateMonitorException("Problem opening time-in-states file");
+            FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             readInStates(bufferedReader);
             fileReader.close();
