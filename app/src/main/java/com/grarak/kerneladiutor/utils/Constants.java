@@ -320,6 +320,12 @@ public interface Constants {
     String GPU_SCALING_FDC00000_QCOM_GOVERNOR = "/sys/devices/fdc00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/governor";
     String GPU_AVAILABLE_FDC00000_QCOM_GOVERNORS = "/sys/devices/fdc00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/available_governors";
 
+    String GPU_CUR_SOC0_FDB00000_QCOM_FREQ = "/sys/devices/soc.0/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/gpuclk";
+    String GPU_MAX_SOC0_FDB00000_QCOM_FREQ = "/sys/devices/soc.0/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk";
+    String GPU_AVAILABLE_SOC0_FDB00000_QCOM_FREQS = "/sys/devices/soc.0/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/gpu_available_frequencies";
+    String GPU_SCALING_SOC0_FDB00000_QCOM_GOVERNOR = "/sys/devices/soc.0/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor";
+    String GPU_AVAILABLE_SOC0_FDB00000_QCOM_GOVERNORS = "/sys/devices/soc.0/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/available_governors";
+
     String GPU_CUR_1C00000_QCOM_FREQ = "/sys/devices/soc.0/1c00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk";
     String GPU_MAX_1C00000_QCOM_FREQ = "/sys/devices/soc.0/1c00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk";
     String GPU_AVAILABLE_1C00000_QCOM_FREQ = "/sys/devices/soc.0/1c00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/gpu_available_frequencies";
@@ -341,20 +347,21 @@ public interface Constants {
     String[] GPU_2D_SCALING_GOVERNOR_ARRAY = {GPU_SCALING_KGSL2D0_QCOM_GOVERNOR};
 
     String[] GPU_CUR_FREQ_ARRAY = {GPU_CUR_KGSL3D0_QCOM_FREQ, GPU_CUR_FDB00000_QCOM_FREQ, GPU_CUR_FDC00000_QCOM_FREQ,
-            GPU_CUR_1C00000_QCOM_FREQ, GPU_CUR_OMAP_FREQ};
+            GPU_CUR_SOC0_FDB00000_QCOM_FREQ, GPU_CUR_1C00000_QCOM_FREQ, GPU_CUR_OMAP_FREQ};
 
     String[] GPU_MAX_FREQ_ARRAY = {GPU_MAX_KGSL3D0_QCOM_FREQ, GPU_MAX_FDB00000_QCOM_FREQ, GPU_MAX_FDC00000_QCOM_FREQ,
-            GPU_MAX_1C00000_QCOM_FREQ, GPU_MAX_OMAP_FREQ};
+            GPU_MAX_SOC0_FDB00000_QCOM_FREQ, GPU_MAX_1C00000_QCOM_FREQ, GPU_MAX_OMAP_FREQ};
 
     String[] GPU_AVAILABLE_FREQS_ARRAY = {GPU_AVAILABLE_KGSL3D0_QCOM_FREQS, GPU_AVAILABLE_FDB00000_QCOM_FREQS,
-            GPU_AVAILABLE_FDC00000_QCOM_FREQS, GPU_AVAILABLE_1C00000_QCOM_FREQ, GPU_AVAILABLE_OMAP_FREQS};
+            GPU_AVAILABLE_SOC0_FDB00000_QCOM_FREQS, GPU_AVAILABLE_FDC00000_QCOM_FREQS, GPU_AVAILABLE_1C00000_QCOM_FREQ,
+            GPU_AVAILABLE_OMAP_FREQS};
 
     String[] GPU_SCALING_GOVERNOR_ARRAY = {GPU_SCALING_KGSL3D0_QCOM_GOVERNOR, GPU_SCALING_FDB00000_QCOM_GOVERNOR,
-            GPU_SCALING_PWRSCALE_GOVERNOR, GPU_SCALING_FDC00000_QCOM_GOVERNOR, GPU_SCALING_1C00000_QCOM_GOVERNOR,
-            GPU_SCALING_OMAP_GOVERNOR};
+            GPU_SCALING_PWRSCALE_GOVERNOR, GPU_SCALING_FDC00000_QCOM_GOVERNOR, GPU_SCALING_SOC0_FDB00000_QCOM_GOVERNOR,
+            GPU_SCALING_1C00000_QCOM_GOVERNOR, GPU_SCALING_OMAP_GOVERNOR};
 
     String[] GPU_AVAILABLE_GOVERNORS_ARRAY = {GPU_AVAILABLE_FDB00000_QCOM_GOVERNORS, GPU_AVAILABLE_FDC00000_QCOM_GOVERNORS,
-            GPU_AVAILABLE_1C00000_QCOM_GOVERNORS, GPU_AVAILABLE_OMAP_GOVERNORS};
+            GPU_AVAILABLE_SOC0_FDB00000_QCOM_GOVERNORS, GPU_AVAILABLE_1C00000_QCOM_GOVERNORS, GPU_AVAILABLE_OMAP_GOVERNORS};
 
     // Simple GPU
     String SIMPLE_GPU_PARAMETERS = "/sys/module/simple_gpu_algorithm/parameters";
@@ -620,7 +627,8 @@ public interface Constants {
             "/sys/class/timed_output/vibrator/pwm_value",
             "/sys/devices/i2c-3/3-0033/vibrator/vib0/vib_duty_cycle",
             "/sys/devices/virtual/timed_output/vibrator/voltage_level",
-            "/sys/devices/virtual/timed_output/vibrator/pwm_value_1p"
+            "/sys/devices/virtual/timed_output/vibrator/pwm_value_1p",
+            "/sys/devices/virtual/timed_output/vibrator/vmax_mv"
     };
 
     int[][] VIBRATION_MAX_MIN_ARRAY = {
@@ -631,7 +639,8 @@ public interface Constants {
             {100, 0}, // Read MAX MIN from sys
             {100, 25}, // Needs enable path
             {3199, 1200},
-            {99, 53}
+            {99, 53},
+            {3596, 116}
     };
 
     String VIB_ENABLE = "/sys/devices/i2c-3/3-0033/vibrator/vib0/vib_enable";
