@@ -17,14 +17,17 @@
 package com.grarak.kerneladiutor.utils.kernel;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.grarak.kerneladiutor.R;
 import com.grarak.kerneladiutor.utils.Constants;
 import com.grarak.kerneladiutor.utils.Utils;
 import com.grarak.kerneladiutor.utils.root.Control;
-import com.grarak.kerneladiutor.utils.root.LinuxUtils;
 import com.kerneladiutor.library.root.RootUtils;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +52,30 @@ public class CPU implements Constants {
 
     private static String CPU_BOOST_ENABLE_FILE;
 
+    public static void activateCpuBoostWakeup(boolean active, Context context) {
+        Control.runCommand(active ? "Y" : "N", CPU_BOOST_WAKEUP, Control.CommandType.GENERIC, context);
+    }
+
+    public static boolean isCpuBoostWakeupActive() {
+        return Utils.readFile(CPU_BOOST_WAKEUP).equals("Y");
+    }
+
+    public static boolean hasCpuBoostWakeup() {
+        return Utils.existFile(CPU_BOOST_WAKEUP);
+    }
+
+    public static void activateCpuBoostHotplug(boolean active, Context context) {
+        Control.runCommand(active ? "Y" : "N", CPU_BOOST_HOTPLUG, Control.CommandType.GENERIC, context);
+    }
+
+    public static boolean isCpuBoostHotplugActive() {
+        return Utils.readFile(CPU_BOOST_HOTPLUG).equals("Y");
+    }
+
+    public static boolean hasCpuBoostHotplug() {
+        return Utils.existFile(CPU_BOOST_HOTPLUG);
+    }
+
     public static void setCpuBoostInputMs(int value, Context context) {
         Control.runCommand(String.valueOf(value), CPU_BOOST_INPUT_MS, Control.CommandType.GENERIC, context);
     }
@@ -62,16 +89,9 @@ public class CPU implements Constants {
     }
 
     public static void setCpuBoostInputFreq(int value, int core, Context context) {
-        String freqs;
-        if ((freqs = Utils.readFile(CPU_BOOST_INPUT_BOOST_FREQ)).contains(":")) {
-            StringBuilder command = new StringBuilder();
-            for (String freq : freqs.split(" "))
-                if (freq.startsWith(core + ":"))
-                    command.append(core).append(":").append(value).append(" ");
-                else command.append(freq).append(" ");
-            command.setLength(command.length() - 1);
-            Control.runCommand(command.toString(), CPU_BOOST_INPUT_BOOST_FREQ, Control.CommandType.GENERIC, context);
-        } else
+        if (Utils.readFile(CPU_BOOST_INPUT_BOOST_FREQ).contains(":"))
+            Control.runCommand(core + ":" + value, CPU_BOOST_INPUT_BOOST_FREQ, Control.CommandType.GENERIC, context);
+        else
             Control.runCommand(String.valueOf(value), CPU_BOOST_INPUT_BOOST_FREQ, Control.CommandType.GENERIC, context);
     }
 
@@ -500,25 +520,85 @@ public class CPU implements Constants {
         return TEMP_FILE != null;
     }
 
-    /**
-     * This code is from http://stackoverflow.com/a/13342738
-     */
-    private static LinuxUtils linuxUtils;
-
-    public static float getCpuUsage() {
-        if (linuxUtils == null) linuxUtils = new LinuxUtils();
-
+    public static float[] getCpuUsage() {
         try {
-            String cpuStat1 = linuxUtils.readSystemStat();
+            Usage[] usage1 = getUsages();
             Thread.sleep(1000);
-            String cpuStat2 = linuxUtils.readSystemStat();
-            float usage = linuxUtils.getSystemCpuUsage(cpuStat1, cpuStat2);
-            if (usage > -1) return usage;
-        } catch (Exception e) {
+            Usage[] usage2 = getUsages();
+
+            if (usage1 != null && usage2 != null) {
+                float[] pers = new float[usage1.length];
+                for (int i = 0; i < usage1.length; i++) {
+                    long idle1 = usage1[i].getIdle();
+                    long up1 = usage1[i].getUptime();
+
+                    long idle2 = usage2[i].getIdle();
+                    long up2 = usage2[i].getUptime();
+
+                    float cpu = -1f;
+                    if (idle1 >= 0 && up1 >= 0 && idle2 >= 0 && up2 >= 0) {
+                        if ((up2 + idle2) > (up1 + idle1) && up2 >= up1) {
+                            cpu = (up2 - up1) / (float) ((up2 + idle2) - (up1 + idle1));
+                            cpu *= 100.0f;
+                        }
+                    }
+
+                    pers[i] = cpu > -1 ? cpu : 0;
+                }
+                return pers;
+            }
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        return 0;
+        return null;
+    }
+
+    private static Usage[] getUsages() {
+        try {
+            RandomAccessFile reader = new RandomAccessFile("/proc/stat", "r");
+            Usage[] usage = new Usage[getCoreCount() + 1];
+            for (int i = 0; i < usage.length; i++)
+                usage[i] = new Usage(reader.readLine());
+            reader.close();
+            return usage;
+        } catch (FileNotFoundException e) {
+            Log.i(TAG, "/proc/stat does not exist");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static class Usage {
+
+        private long[] stats;
+
+        public Usage(String stats) {
+            if (stats == null) return;
+
+            String[] values = stats.replace("  ", " ").split(" ");
+            this.stats = new long[values.length - 1];
+            for (int i = 0; i < this.stats.length; i++)
+                this.stats[i] = Utils.stringToLong(values[i + 1]);
+        }
+
+        public long getUptime() {
+            if (stats == null) return -1L;
+            long l = 0L;
+            for (int i = 0; i < stats.length; i++)
+                if (i != 3) l += stats[i];
+            return l;
+        }
+
+        public long getIdle() {
+            try {
+                return stats == null ? -1L : stats[3];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return -1L;
+            }
+        }
+
     }
 
 }

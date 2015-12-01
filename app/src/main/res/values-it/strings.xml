@@ -61,12 +61,11 @@
   <string name="misc_controls">Controlli vari</string>
   <string name="plugins">Plugins</string>
   <string name="backup">Backup</string>
-  <string name="build_prop_editor">Build prop Editor</string>
+  <string name="build_prop_editor">Editor Build prop</string>
   <string name="profile">Profilo</string>
   <string name="initd">Init.d</string>
   <string name="settings">Impostazioni</string>
   <string name="faq">FAQ</string>
-  <string name="about_us">Chi Siamo</string>
   <string name="unused_cpu_states">Stati inutilizzati della cpu</string>
   <string name="uptime">Tempo di attività</string>
   <string name="deep_sleep">Deep Sleep</string>
@@ -87,7 +86,6 @@
   <string name="cpu_max_screen_off_freq">Massima frequenza CPU a schermo spento</string>
   <string name="cpu_max_screen_off_freq_summary">Imposta la frequenza massima della CPU da scalare fino a quando lo schermo è spento.</string>
   <string name="cpu_governor">Governor CPU</string>
-  <string name="cpu_governor_summary">Il governor della CPU determina il comportamento in risposta alla potenza di calcolo richiesta. Cambiandolo si avranno effetti su come vengono scelte le frequenze dei Core e sulle modalità di passaggio tra i livelli di frequenza disponibili.</string>
   <string name="cpu_governor_tunables">Modifiche al governor della cpu</string>
   <string name="cpu_governor_tunables_summary">Pametri di configurazione avanzata per il governor della CPU.</string>
   <string name="not_tunable">%s non si può modificare</string>
@@ -95,7 +93,7 @@
   <string name="mc_power_saving_summary">Prova a raggruppare le attività nel minor numero di core disponibili.</string>
   <string name="power_saving_wq">Pianificazione per risveglio CPU per risparmiare energia.</string>
   <string name="cfs_scheduler_policy">Linea di condotta Scheduler CFS</string>
-  <string name="cfs_scheduler_policy_summary">La linea di condotta regola come lo scheduler CFS distribuirà i processi sui core disponibili.</string>
+  <string name="cfs_scheduler_policy_summary">La linea di condotta che regola come lo scheduler CFS distribuirà i processi sui core disponibili.</string>
   <string name="disabled">Disabilitato</string>
   <string name="enabled">Abilitato</string>
   <string name="aggressive">Aggressivo</string>
@@ -114,6 +112,8 @@
   <string name="input_boost_freq">Boost frequenza al tocco</string>
   <string name="input_boost_freq_core">Boost della frequenza al tocco %s</string>
   <string name="input_boost_freq_summary">La frequenza a cui la CPU sarà portata al rilevamento di un input.</string>
+  <string name="wakeup_boost">Accellerazione al risveglio</string>
+  <string name="hotplug_boost">Accellerazione dell\'hotplug</string>
   <string name="global_offset">Offset Generale</string>
   <string name="override_vmin">Eseguire l\'abbassamento alla minima tensione</string>
   <string name="override_vmin_summary">Disabilitare per rimuovere i limiti di undervolt stabiliti dal produttore</string>
@@ -126,7 +126,7 @@
   <string name="performance">Performante</string>
   <string name="conservative">Conservativo</string>
   <string name="eco_performance">Prestazioni eco</string>
-  <string name="eco_conservative">Conservativo ecologico</string>
+  <string name="eco_conservative">Conservativo eco</string>
   <string name="tri">Tri</string>
   <string name="eco">Eco</string>
   <string name="strict">Rigoroso</string>
@@ -285,6 +285,8 @@
   <string name="gpu_2d_max_freq_summary">Imposta la massima frequenza della GPU.</string>
   <string name="gpu_max_freq">Massima frequenza GPU</string>
   <string name="gpu_max_freq_summary">Imposta la massima frequenza della GPU.</string>
+  <string name="gpu_min_freq">Frequenza minima GPU</string>
+  <string name="gpu_min_freq_summary">Imposta la frequenza minima a cui la GPU deve scalare.</string>
   <string name="gpu_2d_governor">GPU 2D Governor</string>
   <string name="gpu_2d_governor_summary">Imposta il governor 2D della GPU.</string>
   <string name="gpu_governor">Governor GPU</string>
@@ -379,6 +381,7 @@
   <string name="dt2w_s2w_charging">DoubleTap2Wake + Sweep2Wake durante la ricarica</string>
   <string name="sleep">Sospendi</string>
   <string name="dt2s">DoubleTap2Sleep</string>
+  <string name="dt2s_summary">Blocca il dispositivo cliccando due volte nella parte alta dello schermo.</string>
   <string name="slide_up">Scorrere verso l\'alto</string>
   <string name="slide_down">Far scorrere verso il basso</string>
   <string name="slide_left">Scorri a sinistra</string>
@@ -449,11 +452,9 @@
   <string name="vibration_strength">Intensità di vibrazione</string>
   <string name="android_logger">Registrazione Android</string>
   <string name="fsync">Fsync</string>
-  <string name="fsync_summary">Disabilitare per migliorare le prestazioni del file di sistema a rischio di perdita di dati se il telefono si dovesse bloccare.</string>
   <string name="dynamic_fsync">Fsync dimanico</string>
   <string name="dynamic_fsync_summary">Quando è abilitata e lo schermo è acceso, fsync è asincrona. Quando lo schermo è spento, l\'operazione è sincrona.</string>
   <string name="power_suspend_mode">Modalità Sospensione Energia</string>
-  <string name="power_suspend_mode_summary">Kernel Mode, LCD Hooks e Highest Level Hook sono gestiti automaticamente dal kernel, per attivare o disattivare lo stato si sospensione Energia scegliere \"Modalità utente\".</string>
   <string name="autosleep">Autosleep</string>
   <string name="userspace">Spazio Utente</string>
   <string name="lcd_panel">Pannello LCD</string>
@@ -492,8 +493,9 @@
   <string name="loading_counting">Caricamento %1$d/%2$d</string>
   <string name="downloading_db">Scaricando l\'archivio</string>
   <string name="xda">XDA</string>
+  <string name="github">GitHub</string>
   <string name="google_plus">Google+</string>
-  <string name="download">Scarica</string>
+  <string name="paypal">PayPal</string>
   <string name="downloading_counting">%1$s/%2$s</string>
   <string name="resume">Riprendi</string>
   <string name="checking_md5">Controllo MD5sum</string>
@@ -530,6 +532,7 @@
   <string name="press_again_to_apply">Premere nuovamente per applicare.</string>
   <string name="applied">Applicato</string>
   <string name="applying_profile">Applicare %s</string>
+  <string name="replace_profile">Vuoi sostituire %s?</string>
   <string name="reboot">Riavvia</string>
   <string name="reboot_soft">Riavvio veloce</string>
   <string name="reboot_recovery">Riavviare in recovery</string>
@@ -588,18 +591,16 @@
   <string name="misspelled">Perchè hai sbagliato a scrivere \"Auditor\"?</string>
   <string name="misspelled_summary">Adiutor, in Latino, significa \"assistente\".</string>
   <string name="cpu_freq_not_sticking">Perchè la frequenza che ho scelto non viene conservata?</string>
-  <string name="cpu_freq_not_sticking_summary">Questo ha molte ragioni. Molti kernel hanno oggi un proprio sistema hotplugging che controlla la frequenza della CPU e CyanogenMod ha una propria implementazione CPU Boost che regolano la frequenza. Vorrei suggerire di non toccare le frequenze della CPU e lasciare che il kernel faccia il suo lavoro.</string>
   <string name="feature_not_appearing">Perché le caratteristiche X e Y non sono disponibili?</string>
   <string name="feature_not_appearing_summary">Le caratteristiche utilizzabili dipendono dal Kernel.</string>
   <string name="feature_function">Cosa fa la caratteristica X?</string>
   <string name="feature_function_summary">Se non conosci l\'effetto di un parametro allora, semplicemente, non toccarlo. Ti prego di informarti bene sugli effetti dei parametri prima di giocare con il tuo costoso Smartphone.</string>
   <string name="add_new_features">Potresti aggiungere le caratteristiche X e Y?</string>
-  <string name="add_new_features_summary">Che è difficile da dire. Provo ad aggiungere tutte le funzionalità, ma è difficile fare questa app universale per tutti i dispositivi. Ho solo un Samsung Galaxy S4 (I9500), un HTC Desire 816 e recentemente ha ottenuto un OnePlus 2, quindi non prendertela con me se caratteristiche non ottenere Unite immediatamente.</string>
+  <string name="add_new_features_summary">E\' difficile dirlo. Provo ad aggiungere tutte le funzionalità, ma è difficile rendere questa app universale per tutti i dispositivi. Ho solo un Samsung Galaxy S4 (I9500), un HTC Desire 816 e recentemente ho ottenuto un OnePlus 2, quindi non prendertela con me se le caratteristiche non vengono integrare immediatamente.</string>
   <string name="license">Licenza</string>
   <string name="app_license">Kernel Adiutor è rilasciato sotto licenza Apache, versione 2.0 e utilizza le seguenti librerie</string>
   <string name="open_source">Open source</string>
   <string name="feature_request">Richiesta di una funzione</string>
   <string name="google_plus_summary">Unisciti alla nostra community.</string>
   <string name="translation">Traduzione</string>
-  <string name="translation_summary">Aiutami a tradurre questa app!</string>
 </resources>

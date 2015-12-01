@@ -37,6 +37,10 @@ public class Misc implements Constants {
 
     private static String LOGGER_FILE;
 
+    private static String CRC_FILE;
+
+    private static String FSYNC_FILE;
+
     private static String SMB135X_WAKELOCK_FILE;
     private static String WLAN_RX_WAKELOCK_FILE;
     private static String WLAN_CTRL_WAKELOCK_FILE;
@@ -246,15 +250,37 @@ public class Misc implements Constants {
     }
 
     public static void activateFsync(boolean active, Context context) {
-        Control.runCommand(active ? "1" : "0", FSYNC, Control.CommandType.GENERIC, context);
+        Control.runCommand(active ? "1" : "0", FSYNC_FILE, Control.CommandType.GENERIC, context);
     }
 
     public static boolean isFsyncActive() {
-        return Utils.readFile(FSYNC).equals("1");
+        return Utils.readFile(FSYNC_FILE).equals("1");
     }
 
     public static boolean hasFsync() {
-        return Utils.existFile(FSYNC);
+        for (String file : FSYNC_ARRAY)
+            if (Utils.existFile(file)) {
+                FSYNC_FILE = file;
+                return true;
+            }
+        return false;
+    }
+
+    public static void activateCrc(boolean active, Context context) {
+        Control.runCommand(active ? "1" : "0", CRC_FILE, Control.CommandType.GENERIC, context);
+    }
+
+    public static boolean isCrcActive() {
+        return Utils.readFile(CRC_FILE).equals("1");
+    }
+
+    public static boolean hasCrc() {
+        if (CRC_FILE == null) for (String file : CRC_ARRAY)
+            if (Utils.existFile(file)) {
+                CRC_FILE = file;
+                return true;
+            }
+        return CRC_FILE != null;
     }
 
     public static void activateLogger(boolean active, Context context) {
